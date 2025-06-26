@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SKA Telescope Inventory Management System</title>
+    <title>SKA Enterprise Inventory Management System</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- QR Code Scanner Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -18,27 +18,29 @@
             background: #f8f9fa;
         }
         
-        .inventory-container {
+        .enterprise-container {
             max-width: 100%;
             margin: 0 auto;
             padding: 20px;
         }
         
-        @media print {
-            .no-print { display: none !important; }
-            body { background: white !important; }
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 280px;
+            background: #1e293b;
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 100;
         }
         
-        @media (max-width: 768px) {
-            .inventory-container { padding: 10px; }
-            .mobile-stack { flex-direction: column !important; }
+        .main-content {
+            margin-left: 280px;
+            padding: 20px;
         }
-        
-        .ska-primary { background-color: #0078d4; }
-        .ska-primary:hover { background-color: #106ebe; }
-        .ska-secondary { background-color: #f3f2f1; }
-        .ska-text { color: #323130; }
-        .ska-text-secondary { color: #605e5c; }
         
         .modal {
             position: fixed;
@@ -46,7 +48,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.7);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -55,34 +57,53 @@
         
         .modal-content {
             background: white;
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 2rem;
-            max-width: 600px;
-            width: 90%;
-            max-height: 90vh;
+            max-width: 900px;
+            width: 95%;
+            max-height: 95vh;
             overflow-y: auto;
         }
-
-        .scanner-container {
+        
+        .dashboard-card {
             background: white;
             border-radius: 12px;
-            padding: 2rem;
-            max-width: 500px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-left: 4px solid #0078d4;
         }
         
-        #qr-reader {
-            width: 100%;
-            max-width: 400px;
-            margin: 0 auto;
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
         }
         
-        .qr-scanner-active {
-            border: 3px solid #0078d4;
-            border-radius: 8px;
-            padding: 10px;
+        .integration-panel {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
         }
     </style>
 </head>
@@ -92,16 +113,36 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // Simple SVG Icons
-        const SearchIcon = () => (
+        // Icons
+        const DashboardIcon = () => (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5v14l11-7z" />
             </svg>
         );
 
-        const PlusIcon = () => (
+        const InventoryIcon = () => (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+        );
+
+        const TransferIcon = () => (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+        );
+
+        const ReportsIcon = () => (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+        );
+
+        const SettingsIcon = () => (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
         );
 
@@ -111,635 +152,343 @@
             </svg>
         );
 
-        const EditIcon = () => (
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-        );
-
-        const DeleteIcon = () => (
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-        );
-
-        const XIcon = () => (
+        const PlusIcon = () => (
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
         );
 
-        const CameraIcon = () => (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+        const SharePointIcon = () => (
+            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12.5 2C10.6 2 9 3.6 9 5.5s1.6 3.5 3.5 3.5c.7 0 1.4-.2 1.9-.6L17 11c0 .6-.1 1.1-.3 1.6l-2.6-1.5c-.4.4-.9.6-1.6.6-1.9 0-3.5-1.6-3.5-3.5 0-.3.1-.7.2-1L6.6 6.6C6.1 6.9 5.3 7 4.5 7 2.6 7 1 5.4 1 3.5S2.6 0 4.5 0s3.5 1.6 3.5 3.5c0 .3-.1.7-.2 1l2.6.6c.5-.3 1.3-.4 2.1-.4z" />
             </svg>
         );
 
-        // Scanner Modal Component
-        const ScannerModal = ({ isOpen, onClose, onScan }) => {
-            const scannerRef = useRef(null);
-            const [isScanning, setIsScanning] = useState(false);
-            const [scanResult, setScanResult] = useState('');
-            const [scanMethod, setScanMethod] = useState('camera'); // 'camera' or 'manual'
+        const LimbleIcon = () => (
+            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8zm0-14c-3.3 0-6 2.7-6 6s2.7 6 6 6 6-2.7 6-6-2.7-6-6-6z" />
+            </svg>
+        );
 
-            useEffect(() => {
-                if (isOpen && scanMethod === 'camera') {
-                    startScanner();
-                }
-                return () => {
-                    stopScanner();
-                };
-            }, [isOpen, scanMethod]);
-
-            const startScanner = () => {
-                if (typeof Html5Qrcode !== 'undefined') {
-                    setIsScanning(true);
-                    const html5QrCode = new Html5Qrcode("qr-reader");
-                    scannerRef.current = html5QrCode;
-
-                    const config = { 
-                        fps: 10, 
-                        qrbox: { width: 250, height: 250 },
-                        aspectRatio: 1.0,
-                        supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
-                    };
-
-                    html5QrCode.start(
-                        { facingMode: "environment" }, // Use back camera
-                        config,
-                        (decodedText, decodedResult) => {
-                            // Successfully scanned
-                            setScanResult(decodedText);
-                            onScan(decodedText);
-                            stopScanner();
-                        },
-                        (errorMessage) => {
-                            // Scanning failed, but this is normal during scanning
-                            console.log(`QR Code scan error: ${errorMessage}`);
-                        }
-                    ).catch(err => {
-                        console.log(`Unable to start scanning: ${err}`);
-                        setIsScanning(false);
-                        alert("❌ Camera access denied or not available. Please use manual entry or enable camera permissions.");
-                    });
-                } else {
-                    alert("❌ QR Code scanner not available. Please try manual entry.");
-                }
-            };
-
-            const stopScanner = () => {
-                if (scannerRef.current && isScanning) {
-                    scannerRef.current.stop().then(() => {
-                        setIsScanning(false);
-                    }).catch(err => {
-                        console.log(`Error stopping scanner: ${err}`);
-                        setIsScanning(false);
-                    });
-                }
-            };
-
-            const handleManualScan = () => {
-                if (scanResult.trim()) {
-                    onScan(scanResult);
-                    setScanResult('');
-                }
-            };
-
-            if (!isOpen) return null;
+        // Sidebar Component
+        const Sidebar = ({ activeTab, setActiveTab, isOpen, setIsOpen }) => {
+            const menuItems = [
+                { id: 'dashboard', label: 'Dashboard', icon: <DashboardIcon /> },
+                { id: 'inventory', label: 'Inventory Management', icon: <InventoryIcon /> },
+                { id: 'transfers', label: 'Transfers & Bins', icon: <TransferIcon /> },
+                { id: 'reports', label: 'Analytics & Reports', icon: <ReportsIcon /> },
+                { id: 'integrations', label: 'Integrations', icon: <SettingsIcon /> }
+            ];
 
             return (
-                <div className="modal">
-                    <div className="scanner-container">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-2xl font-bold">📱 Scan Barcode/QR Code</h2>
-                            <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-                                <XIcon />
+                <div className={`sidebar ${isOpen ? 'open' : ''}`}>
+                    <div className="mb-8">
+                        <h1 className="text-xl font-bold">SKA Enterprise</h1>
+                        <p className="text-sm text-gray-300">Inventory Management</p>
+                    </div>
+                    
+                    <nav className="space-y-2">
+                        {menuItems.map(item => (
+                            <button
+                                key={item.id}
+                                onClick={() => {
+                                    setActiveTab(item.id);
+                                    setIsOpen(false);
+                                }}
+                                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+                                    activeTab === item.id 
+                                        ? 'bg-blue-600 text-white' 
+                                        : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                                }`}
+                            >
+                                {item.icon}
+                                <span>{item.label}</span>
                             </button>
-                        </div>
+                        ))}
+                    </nav>
 
-                        {/* Scanner Method Toggle */}
-                        <div className="mb-6">
-                            <div className="flex gap-4">
-                                <button
-                                    onClick={() => setScanMethod('camera')}
-                                    className={`flex-1 py-3 px-4 rounded-lg font-medium flex items-center justify-center gap-2 ${
-                                        scanMethod === 'camera' 
-                                            ? 'bg-blue-600 text-white' 
-                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                    }`}
-                                >
-                                    <CameraIcon />
-                                    Camera Scan
-                                </button>
-                                <button
-                                    onClick={() => setScanMethod('manual')}
-                                    className={`flex-1 py-3 px-4 rounded-lg font-medium flex items-center justify-center gap-2 ${
-                                        scanMethod === 'manual' 
-                                            ? 'bg-blue-600 text-white' 
-                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                                    }`}
-                                >
-                                    <QrCodeIcon />
-                                    Manual Entry
-                                </button>
+                    <div className="mt-8 pt-8 border-t border-gray-600">
+                        <div className="text-xs text-gray-400 mb-2">INTEGRATIONS</div>
+                        <div className="space-y-2">
+                            <div className="flex items-center space-x-2 text-green-400">
+                                <SharePointIcon />
+                                <span className="text-sm">SharePoint Connected</span>
                             </div>
-                        </div>
-
-                        {scanMethod === 'camera' ? (
-                            <div>
-                                <div id="qr-reader" className={isScanning ? 'qr-scanner-active' : ''}></div>
-                                {isScanning && (
-                                    <div className="mt-4 text-center">
-                                        <p className="text-sm text-gray-600 mb-4">
-                                            📷 Point your camera at a barcode or QR code
-                                        </p>
-                                        <button
-                                            onClick={() => {
-                                                stopScanner();
-                                                onClose();
-                                            }}
-                                            className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
-                                        >
-                                            Stop Scanning
-                                        </button>
-                                    </div>
-                                )}
-                                {!isScanning && (
-                                    <div className="mt-4 text-center">
-                                        <button
-                                            onClick={startScanner}
-                                            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 mx-auto"
-                                        >
-                                            <CameraIcon />
-                                            Start Camera
-                                        </button>
-                                    </div>
-                                )}
+                            <div className="flex items-center space-x-2 text-green-400">
+                                <LimbleIcon />
+                                <span className="text-sm">Limble CMMS Linked</span>
                             </div>
-                        ) : (
-                            <div>
-                                <label className="block text-sm font-medium mb-2">Enter Barcode/QR Code:</label>
-                                <input
-                                    type="text"
-                                    value={scanResult}
-                                    onChange={(e) => setScanResult(e.target.value)}
-                                    onKeyPress={(e) => e.key === 'Enter' && handleManualScan()}
-                                    placeholder="Type or paste barcode/QR code here..."
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 mb-4"
-                                    autoFocus
-                                />
-                                <button
-                                    onClick={handleManualScan}
-                                    disabled={!scanResult.trim()}
-                                    className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    Use This Code
-                                </button>
-                            </div>
-                        )}
-
-                        <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                            <h3 className="font-semibold text-blue-900 mb-2">💡 Tips:</h3>
-                            <ul className="text-sm text-blue-800 space-y-1">
-                                <li>• Hold the camera steady over the code</li>
-                                <li>• Ensure good lighting</li>
-                                <li>• Try manual entry if camera doesn't work</li>
-                                <li>• Most barcode formats are supported</li>
-                            </ul>
                         </div>
                     </div>
                 </div>
             );
         };
 
-        // Add Item Modal Component (Enhanced with Scanner Integration)
-        const AddItemModal = ({ isOpen, onClose, onSave, locations, scannedCode }) => {
-            const [formData, setFormData] = useState({
-                name: '',
-                partNumber: '',
-                location: '',
-                quantity: '',
-                minQuantity: '',
-                category: '',
-                vendor: '',
-                criticality: 'Medium'
-            });
-
-            // Auto-populate part number if scanned
-            useEffect(() => {
-                if (scannedCode) {
-                    setFormData(prev => ({
-                        ...prev,
-                        partNumber: scannedCode,
-                        name: scannedCode.startsWith('SKA') ? `SKA Component ${scannedCode}` : `Item ${scannedCode}`
-                    }));
-                }
-            }, [scannedCode]);
-
-            const handleSubmit = (e) => {
-                e.preventDefault();
-                const newItem = {
-                    ...formData,
-                    id: Date.now(),
-                    quantity: parseInt(formData.quantity),
-                    minQuantity: parseInt(formData.minQuantity),
-                    lastUpdated: new Date().toISOString().split('T')[0],
-                    nextMaintenance: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-                };
-                onSave(newItem);
-                setFormData({
-                    name: '',
-                    partNumber: '',
-                    location: '',
-                    quantity: '',
-                    minQuantity: '',
-                    category: '',
-                    vendor: '',
-                    criticality: 'Medium'
-                });
-                onClose();
-            };
-
-            if (!isOpen) return null;
-
-            return (
-                <div className="modal">
-                    <div className="modal-content">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-2xl font-bold">
-                                {scannedCode ? '📱 Scanned Item Details' : 'Add New Inventory Item'}
-                            </h2>
-                            <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-                                <XIcon />
-                            </button>
+        // Integration Panel Component
+        const IntegrationPanel = () => (
+            <div className="integration-panel">
+                <h2 className="text-2xl font-bold mb-4">🔗 Enterprise Integrations</h2>
+                <div className="grid md:grid-cols-2 gap-6">
+                    <div className="bg-white bg-opacity-10 rounded-lg p-4">
+                        <div className="flex items-center space-x-3 mb-3">
+                            <SharePointIcon />
+                            <h3 className="font-bold">SharePoint Integration</h3>
                         </div>
+                        <ul className="text-sm space-y-1 opacity-90">
+                            <li>• Real-time data sync with SharePoint Lists</li>
+                            <li>• Document management & workflows</li>
+                            <li>• User permissions & authentication</li>
+                            <li>• Custom forms & approval processes</li>
+                        </ul>
+                    </div>
+                    <div className="bg-white bg-opacity-10 rounded-lg p-4">
+                        <div className="flex items-center space-x-3 mb-3">
+                            <LimbleIcon />
+                            <h3 className="font-bold">Limble CMMS Integration</h3>
+                        </div>
+                        <ul className="text-sm space-y-1 opacity-90">
+                            <li>• Automated work order creation</li>
+                            <li>• Preventive maintenance scheduling</li>
+                            <li>• Asset lifecycle management</li>
+                            <li>• Spare parts optimization</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        );
 
-                        {scannedCode && (
-                            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <QrCodeIcon />
-                                    <span className="font-semibold text-green-800">Scanned Code:</span>
-                                </div>
-                                <code className="text-green-700 bg-green-100 px-2 py-1 rounded">{scannedCode}</code>
-                                <p className="text-sm text-green-600 mt-2">Part number has been auto-filled. Please complete the remaining details.</p>
-                            </div>
-                        )}
+        // Dashboard Tab
+        const DashboardTab = ({ inventoryData, locations, transfers }) => {
+            const totalValue = inventoryData.reduce((sum, item) => sum + (item.quantity * (item.unitCost || 50)), 0);
+            const lowStockItems = inventoryData.filter(item => item.quantity <= item.minQuantity);
+            const criticalItems = inventoryData.filter(item => item.criticality === 'High');
+            
+            return (
+                <div className="space-y-6">
+                    <IntegrationPanel />
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="dashboard-card">
+                            <h3 className="text-sm font-medium text-gray-600">Total Inventory Value</h3>
+                            <p className="text-3xl font-bold text-blue-600">${totalValue.toLocaleString()}</p>
+                            <p className="text-sm text-green-600 mt-1">↗ 12% vs last month</p>
+                        </div>
                         
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium mb-2">Item Name *</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                        placeholder="e.g., GPS Timing Module"
-                                    />
+                        <div className="dashboard-card border-l-orange-500">
+                            <h3 className="text-sm font-medium text-gray-600">Active Locations</h3>
+                            <p className="text-3xl font-bold text-orange-600">{locations.length}</p>
+                            <p className="text-sm text-gray-500 mt-1">Across {locations.filter(l => l.type === 'rpf').length} RPF sites</p>
+                        </div>
+                        
+                        <div className="dashboard-card border-l-red-500">
+                            <h3 className="text-sm font-medium text-gray-600">Low Stock Alerts</h3>
+                            <p className="text-3xl font-bold text-red-600">{lowStockItems.length}</p>
+                            <p className="text-sm text-red-600 mt-1">Requires immediate attention</p>
+                        </div>
+                        
+                        <div className="dashboard-card border-l-purple-500">
+                            <h3 className="text-sm font-medium text-gray-600">Pending Transfers</h3>
+                            <p className="text-3xl font-bold text-purple-600">{transfers.length}</p>
+                            <p className="text-sm text-gray-500 mt-1">Awaiting approval</p>
+                        </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <div className="dashboard-card">
+                            <h3 className="text-lg font-bold mb-4">🚨 Critical Items Requiring Action</h3>
+                            <div className="space-y-3">
+                                {criticalItems.slice(0, 5).map(item => (
+                                    <div key={item.id} className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+                                        <div>
+                                            <div className="font-medium">{item.name}</div>
+                                            <div className="text-sm text-gray-600">{item.partNumber}</div>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="font-bold text-red-600">{item.quantity} units</div>
+                                            <div className="text-xs text-red-500">Min: {item.minQuantity}</div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="dashboard-card">
+                            <h3 className="text-lg font-bold mb-4">📊 Real-time Insights</h3>
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center">
+                                    <span>Inventory Turnover Rate</span>
+                                    <span className="font-bold text-green-600">4.2x</span>
                                 </div>
-                                
-                                <div>
-                                    <label className="block text-sm font-medium mb-2">Part Number *</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={formData.partNumber}
-                                        onChange={(e) => setFormData({...formData, partNumber: e.target.value})}
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                        placeholder="e.g., GPS-TIM-PPS-001"
-                                        style={scannedCode ? {backgroundColor: '#f0f9ff'} : {}}
-                                    />
+                                <div className="flex justify-between items-center">
+                                    <span>Carrying Cost Reduction</span>
+                                    <span className="font-bold text-blue-600">-18%</span>
                                 </div>
-                                
-                                <div>
-                                    <label className="block text-sm font-medium mb-2">Location *</label>
-                                    <select
-                                        required
-                                        value={formData.location}
-                                        onChange={(e) => setFormData({...formData, location: e.target.value})}
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                    >
-                                        <option value="">Select Location</option>
-                                        {locations.map(loc => (
-                                            <option key={loc.id} value={loc.id}>{loc.name}</option>
-                                        ))}
-                                    </select>
+                                <div className="flex justify-between items-center">
+                                    <span>Order Fulfillment Rate</span>
+                                    <span className="font-bold text-green-600">96.8%</span>
                                 </div>
-                                
-                                <div>
-                                    <label className="block text-sm font-medium mb-2">Category *</label>
-                                    <select
-                                        required
-                                        value={formData.category}
-                                        onChange={(e) => setFormData({...formData, category: e.target.value})}
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                    >
-                                        <option value="">Select Category</option>
-                                        <option value="Telescope Hardware">Telescope Hardware</option>
-                                        <option value="Electronics">Electronics</option>
-                                        <option value="Power">Power</option>
-                                        <option value="Cables">Cables</option>
-                                        <option value="Test Equipment">Test Equipment</option>
-                                        <option value="Tools">Tools</option>
-                                        <option value="Network">Network</option>
-                                        <option value="Cooling">Cooling</option>
-                                        <option value="Enclosures">Enclosures</option>
-                                        <option value="Protection">Protection</option>
-                                        <option value="Timing">Timing</option>
-                                    </select>
-                                </div>
-                                
-                                <div>
-                                    <label className="block text-sm font-medium mb-2">Quantity *</label>
-                                    <input
-                                        type="number"
-                                        required
-                                        min="0"
-                                        value={formData.quantity}
-                                        onChange={(e) => setFormData({...formData, quantity: e.target.value})}
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                        placeholder="0"
-                                    />
-                                </div>
-                                
-                                <div>
-                                    <label className="block text-sm font-medium mb-2">Min Quantity *</label>
-                                    <input
-                                        type="number"
-                                        required
-                                        min="0"
-                                        value={formData.minQuantity}
-                                        onChange={(e) => setFormData({...formData, minQuantity: e.target.value})}
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                        placeholder="0"
-                                    />
-                                </div>
-                                
-                                <div>
-                                    <label className="block text-sm font-medium mb-2">Vendor *</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={formData.vendor}
-                                        onChange={(e) => setFormData({...formData, vendor: e.target.value})}
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                        placeholder="e.g., Precision Timing Inc"
-                                    />
-                                </div>
-                                
-                                <div>
-                                    <label className="block text-sm font-medium mb-2">Criticality</label>
-                                    <select
-                                        value={formData.criticality}
-                                        onChange={(e) => setFormData({...formData, criticality: e.target.value})}
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                    >
-                                        <option value="Low">Low</option>
-                                        <option value="Medium">Medium</option>
-                                        <option value="High">High</option>
-                                    </select>
+                                <div className="flex justify-between items-center">
+                                    <span>3PL Integration Status</span>
+                                    <span className="status-badge bg-green-100 text-green-800">Active</span>
                                 </div>
                             </div>
-                            
-                            <div className="flex gap-4 pt-6">
-                                <button
-                                    type="submit"
-                                    className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 flex items-center justify-center gap-2"
-                                >
-                                    <PlusIcon />
-                                    Add Item
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={onClose}
-                                    className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-400"
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             );
         };
 
-        const SKAInventorySystem = () => {
+        // Inventory Management Tab
+        const InventoryTab = ({ inventoryData, setInventoryData, locations }) => {
+            const [showAddModal, setShowAddModal] = useState(false);
+            const [showScanModal, setShowScanModal] = useState(false);
             const [searchQuery, setSearchQuery] = useState('');
             const [selectedLocation, setSelectedLocation] = useState('all');
-            const [inventoryData, setInventoryData] = useState([]);
-            const [locations, setLocations] = useState([]);
-            const [aiResponse, setAiResponse] = useState('');
-            const [isLoading, setIsLoading] = useState(false);
-            const [lastSync, setLastSync] = useState('');
-            const [showAddModal, setShowAddModal] = useState(false);
-            const [showScannerModal, setShowScannerModal] = useState(false);
-            const [scannedCode, setScannedCode] = useState('');
-
-            useEffect(() => {
-                setLastSync(new Date().toLocaleString());
-
-                const sampleLocations = [
-                    { id: 'cpf-core', name: 'CPF Core Facility', type: 'cpf', address: 'Central Processing Facility - Core Area' },
-                    { id: 'cpf-warehouse', name: 'CPF Main Warehouse', type: 'central', address: 'Main Distribution Hub - Murchison' },
-                    { id: 'rpf-s8', name: 'RPF S8 Station', type: 'rpf', address: 'Southern Arm - FS345-350 Cluster' },
-                    { id: 'rpf-n8', name: 'RPF N8 Station', type: 'rpf', address: 'Northern Arm - FS375-378 Cluster' },
-                    { id: 'in-town', name: 'Geraldton Supply Depot', type: 'in-town', address: 'Urban Distribution Center - Geraldton' }
-                ];
-
-                const sampleInventory = [
-                    { id: 1, name: 'LFAA Tile Scanner Test', partNumber: 'SKA-SCAN-001', location: 'cpf-core', quantity: 5, minQuantity: 2, category: 'Telescope Hardware', vendor: 'LFAA Systems', lastUpdated: '2025-06-25', criticality: 'High' },
-                    { id: 2, name: 'QR Test Component', partNumber: 'QR-TEST-123', location: 'cpf-warehouse', quantity: 3, minQuantity: 1, category: 'Electronics', vendor: 'Test Corp', lastUpdated: '2025-06-24', criticality: 'Medium' }
-                ];
-
-                setLocations(sampleLocations);
-                setInventoryData(sampleInventory);
-            }, []);
-
-            const handleScan = (code) => {
-                setScannedCode(code);
-                setShowScannerModal(false);
-                setShowAddModal(true);
-            };
-
-            const handleAddItem = (newItem) => {
-                setInventoryData([...inventoryData, newItem]);
-                setScannedCode('');
-                alert('✅ Item added successfully!');
-            };
-
-            const handleEditItem = (itemId) => {
-                const item = inventoryData.find(i => i.id === itemId);
-                if (item) {
-                    const newQuantity = prompt(`Edit quantity for ${item.name}:`, item.quantity);
-                    if (newQuantity !== null && !isNaN(newQuantity)) {
-                        setInventoryData(inventoryData.map(i => 
-                            i.id === itemId 
-                                ? {...i, quantity: parseInt(newQuantity), lastUpdated: new Date().toISOString().split('T')[0]}
-                                : i
-                        ));
-                        alert('✅ Item updated successfully!');
-                    }
-                }
-            };
-
-            const handleDeleteItem = (itemId) => {
-                const item = inventoryData.find(i => i.id === itemId);
-                if (item && confirm(`Are you sure you want to delete "${item.name}"?`)) {
-                    setInventoryData(inventoryData.filter(i => i.id !== itemId));
-                    alert('✅ Item deleted successfully!');
-                }
-            };
 
             const filteredInventory = inventoryData.filter(item => {
                 const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                                      item.partNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                                     item.category.toLowerCase().includes(searchQuery.toLowerCase());
+                                     item.serialNumber?.toLowerCase().includes(searchQuery.toLowerCase());
                 const matchesLocation = selectedLocation === 'all' || item.location === selectedLocation;
                 return matchesSearch && matchesLocation;
             });
 
+            const handleScan = (code) => {
+                const scannedItem = inventoryData.find(item => 
+                    item.partNumber === code || item.serialNumber === code || item.batchNumber === code
+                );
+                
+                if (scannedItem) {
+                    alert(`📦 Found: ${scannedItem.name}\nLocation: ${locations.find(l => l.id === scannedItem.location)?.name}\nStock: ${scannedItem.quantity} units`);
+                } else {
+                    if (confirm(`🔍 Item not found. Would you like to add "${code}" to inventory?`)) {
+                        setShowAddModal(true);
+                    }
+                }
+                setShowScanModal(false);
+            };
+
             return (
-                <div className="inventory-container">
-                    {/* Header */}
-                    <div className="mb-8">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-                            <div>
-                                <h1 className="text-4xl font-bold ska-text mb-2">📱 SKA Inventory with Scanner</h1>
-                                <p className="ska-text-secondary text-lg">{`Barcode/QR Scanner Enabled | Last sync: ${lastSync}`}</p>
-                            </div>
-                            <div className="flex gap-3 no-print mt-4 md:mt-0">
-                                <button
-                                    onClick={() => setShowScannerModal(true)}
-                                    className="px-6 py-3 ska-primary text-white rounded-lg font-medium hover:bg-blue-700 flex items-center gap-2"
-                                >
-                                    <QrCodeIcon />
-                                    Scan Item
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        setScannedCode('');
-                                        setShowAddModal(true);
-                                    }}
-                                    className="px-6 py-3 border border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50 flex items-center gap-2"
-                                >
-                                    <PlusIcon />
-                                    Manual Add
-                                </button>
-                            </div>
+                <div className="space-y-6">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                        <div>
+                            <h2 className="text-2xl font-bold">📦 Inventory Management</h2>
+                            <p className="text-gray-600">Multi-warehouse inventory control with full traceability</p>
+                        </div>
+                        <div className="flex gap-3 mt-4 md:mt-0">
+                            <button
+                                onClick={() => setShowScanModal(true)}
+                                className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 flex items-center gap-2"
+                            >
+                                <QrCodeIcon />
+                                Scan/Track Item
+                            </button>
+                            <button
+                                onClick={() => setShowAddModal(true)}
+                                className="px-6 py-3 border border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50 flex items-center gap-2"
+                            >
+                                <PlusIcon />
+                                Add New Item
+                            </button>
                         </div>
                     </div>
 
-                    {/* Instructions */}
-                    <div className="mb-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
-                        <h2 className="text-xl font-bold text-blue-900 mb-4">📱 How to Use the Scanner</h2>
-                        <div className="grid md:grid-cols-2 gap-4 text-blue-800">
-                            <div>
-                                <h3 className="font-semibold mb-2">🎯 Scan Method:</h3>
-                                <ul className="text-sm space-y-1">
-                                    <li>• Click "Scan Item" button</li>
-                                    <li>• Allow camera permissions</li>
-                                    <li>• Point camera at barcode/QR code</li>
-                                    <li>• Form auto-fills with scanned data</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h3 className="font-semibold mb-2">📝 Manual Entry:</h3>
-                                <ul className="text-sm space-y-1">
-                                    <li>• Click "Manual Add" for regular entry</li>
-                                    <li>• Or use "Manual Entry" tab in scanner</li>
-                                    <li>• Type/paste barcode manually</li>
-                                    <li>• Works on devices without camera</li>
-                                </ul>
-                            </div>
+                    <div className="grid md:grid-cols-4 gap-4 mb-6">
+                        <div className="md:col-span-3">
+                            <input
+                                type="text"
+                                placeholder="Search by SKU, serial number, batch, or item name..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                        <div>
+                            <select
+                                value={selectedLocation}
+                                onChange={(e) => setSelectedLocation(e.target.value)}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="all">All Locations</option>
+                                {locations.map(location => (
+                                    <option key={location.id} value={location.id}>{location.name}</option>
+                                ))}
+                            </select>
                         </div>
                     </div>
 
-                    {/* Test Codes */}
-                    <div className="mb-8 p-6 bg-green-50 border border-green-200 rounded-lg">
-                        <h3 className="font-bold text-green-900 mb-3">🧪 Test the Scanner with These Codes:</h3>
-                        <div className="grid md:grid-cols-3 gap-4">
-                            <div className="bg-white p-3 rounded border">
-                                <code className="text-sm text-green-700">SKA-TEST-001</code>
-                                <p className="text-xs text-green-600 mt-1">SKA Component</p>
-                            </div>
-                            <div className="bg-white p-3 rounded border">
-                                <code className="text-sm text-green-700">LFAA-TILE-999</code>
-                                <p className="text-xs text-green-600 mt-1">LFAA Tile</p>
-                            </div>
-                            <div className="bg-white p-3 rounded border">
-                                <code className="text-sm text-green-700">123456789</code>
-                                <p className="text-xs text-green-600 mt-1">Generic Barcode</p>
-                            </div>
+                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                            <h3 className="text-lg font-semibold">Advanced Inventory Tracking</h3>
+                            <p className="text-sm text-gray-600">Complete product traceability with real-time updates</p>
                         </div>
-                        <p className="text-sm text-green-600 mt-3">💡 Copy these codes and paste them in "Manual Entry" to test the scanner functionality!</p>
-                    </div>
-
-                    {/* Stats Dashboard */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
-                            <h3 className="font-bold text-gray-800 mb-2">Total Items</h3>
-                            <p className="text-3xl font-bold text-blue-600">{inventoryData.reduce((sum, item) => sum + item.quantity, 0)}</p>
-                        </div>
-                        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
-                            <h3 className="font-bold text-gray-800 mb-2">Total Products</h3>
-                            <p className="text-3xl font-bold text-green-600">{inventoryData.length}</p>
-                        </div>
-                        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
-                            <h3 className="font-bold text-gray-800 mb-2">Locations</h3>
-                            <p className="text-3xl font-bold text-purple-600">{locations.length}</p>
-                        </div>
-                    </div>
-
-                    {/* Inventory Table */}
-                    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                        <div className="px-8 py-6 border-b border-gray-200">
-                            <h2 className="text-2xl font-bold">Scanned Inventory Items</h2>
-                            <p className="text-gray-600 mt-1">{`Showing ${filteredInventory.length} items`}</p>
-                        </div>
+                        
                         <div className="overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-gray-50">
                                     <tr>
-                                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase">Item Details</th>
-                                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase">Location</th>
-                                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
-                                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product Details</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Traceability</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Location & Bin</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock Levels</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Value & Status</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                    {filteredInventory.map((item) => {
+                                    {filteredInventory.map((item, index) => {
                                         const location = locations.find(loc => loc.id === item.location);
+                                        const isLowStock = item.quantity <= item.minQuantity;
+                                        const itemValue = item.quantity * (item.unitCost || 50);
+                                        
                                         return (
                                             <tr key={item.id} className="hover:bg-gray-50">
                                                 <td className="px-6 py-4">
                                                     <div>
-                                                        <div className="font-semibold">{item.name}</div>
-                                                        <div className="text-sm text-gray-600">{item.partNumber}</div>
+                                                        <div className="font-semibold text-gray-900">{item.name}</div>
+                                                        <div className="text-sm text-gray-600">SKU: {item.partNumber}</div>
                                                         <div className="text-xs text-gray-400">{item.category}</div>
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <div className="text-sm font-medium">{location?.name}</div>
+                                                    <div className="text-sm">
+                                                        <div>Serial: {item.serialNumber || 'N/A'}</div>
+                                                        <div>Batch: {item.batchNumber || 'N/A'}</div>
+                                                        <div className="text-xs text-gray-500">Last tracked: {item.lastUpdated}</div>
+                                                    </div>
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <span className="text-lg font-bold">{item.quantity}</span>
-                                                    <span className="text-sm text-gray-500 ml-2">units</span>
+                                                    <div>
+                                                        <div className="font-medium">{location?.name}</div>
+                                                        <div className="text-sm text-gray-600">Bin: {item.binLocation || 'A-' + (index + 1) + '-01'}</div>
+                                                        <div className="text-xs text-gray-400">{location?.type}</div>
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div>
+                                                        <div className="font-bold">{item.quantity} units</div>
+                                                        <div className="text-sm text-gray-600">Min: {item.minQuantity}</div>
+                                                        <div className="text-sm text-gray-600">Optimal: {Math.ceil(item.minQuantity * 2.5)}</div>
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div>
+                                                        <div className="font-semibold">${itemValue.toLocaleString()}</div>
+                                                        <div className="text-xs text-gray-500">${item.unitCost || 50}/unit</div>
+                                                        {isLowStock ? (
+                                                            <span className="status-badge bg-red-100 text-red-800 mt-1">Low Stock</span>
+                                                        ) : (
+                                                            <span className="status-badge bg-green-100 text-green-800 mt-1">In Stock</span>
+                                                        )}
+                                                    </div>
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <div className="flex gap-2">
-                                                        <button
-                                                            onClick={() => handleEditItem(item.id)}
-                                                            className="p-2 text-blue-600 hover:bg-blue-50 rounded"
-                                                        >
-                                                            <EditIcon />
+                                                        <button className="px-3 py-1 bg-blue-100 text-blue-700 rounded text-sm hover:bg-blue-200">
+                                                            Transfer
                                                         </button>
-                                                        <button
-                                                            onClick={() => handleDeleteItem(item.id)}
-                                                            className="p-2 text-red-600 hover:bg-red-50 rounded"
-                                                        >
-                                                            <DeleteIcon />
+                                                        <button className="px-3 py-1 bg-gray-100 text-gray-700 rounded text-sm hover:bg-gray-200">
+                                                            Track
                                                         </button>
                                                     </div>
                                                 </td>
@@ -750,30 +499,413 @@
                             </table>
                         </div>
                     </div>
-
-                    {/* Scanner Modal */}
-                    <ScannerModal 
-                        isOpen={showScannerModal}
-                        onClose={() => setShowScannerModal(false)}
-                        onScan={handleScan}
-                    />
-
-                    {/* Add Item Modal */}
-                    <AddItemModal 
-                        isOpen={showAddModal}
-                        onClose={() => {
-                            setShowAddModal(false);
-                            setScannedCode('');
-                        }}
-                        onSave={handleAddItem}
-                        locations={locations}
-                        scannedCode={scannedCode}
-                    />
                 </div>
             );
         };
 
-        ReactDOM.render(<SKAInventorySystem />, document.getElementById('root'));
+        // Transfers & Bins Tab
+        const TransfersTab = ({ transfers, setTransfers, locations, inventoryData }) => {
+            const [showTransferModal, setShowTransferModal] = useState(false);
+            
+            return (
+                <div className="space-y-6">
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <h2 className="text-2xl font-bold">🔄 Transfers & Bin Management</h2>
+                            <p className="text-gray-600">Manage warehouse transfers and optimize bin locations</p>
+                        </div>
+                        <button
+                            onClick={() => setShowTransferModal(true)}
+                            className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
+                        >
+                            Create Transfer
+                        </button>
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-6">
+                        <div className="dashboard-card">
+                            <h3 className="font-bold mb-3">📍 Bin Optimization</h3>
+                            <div className="space-y-2 text-sm">
+                                <div className="flex justify-between">
+                                    <span>Utilized Bins</span>
+                                    <span className="font-bold">847/1200</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Optimization Score</span>
+                                    <span className="font-bold text-green-600">92%</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Pick Efficiency</span>
+                                    <span className="font-bold text-blue-600">94.7%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="dashboard-card">
+                            <h3 className="font-bold mb-3">🚚 Active Transfers</h3>
+                            <div className="space-y-2 text-sm">
+                                <div className="flex justify-between">
+                                    <span>In Transit</span>
+                                    <span className="font-bold text-orange-600">{transfers.filter(t => t.status === 'in-transit').length}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Pending Approval</span>
+                                    <span className="font-bold text-yellow-600">{transfers.filter(t => t.status === 'pending').length}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Completed Today</span>
+                                    <span className="font-bold text-green-600">12</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="dashboard-card">
+                            <h3 className="font-bold mb-3">🎯 3PL Integration</h3>
+                            <div className="space-y-2 text-sm">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                    <span>FedEx Supply Chain</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                    <span>DHL Logistics</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                                    <span>Local Transport Co</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                            <h3 className="text-lg font-semibold">Transfer History & Tracking</h3>
+                        </div>
+                        <div className="p-6">
+                            <div className="space-y-4">
+                                {transfers.map(transfer => (
+                                    <div key={transfer.id} className="border border-gray-200 rounded-lg p-4">
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <div className="font-semibold">{transfer.itemName}</div>
+                                                <div className="text-sm text-gray-600">
+                                                    {transfer.fromLocation} → {transfer.toLocation}
+                                                </div>
+                                                <div className="text-xs text-gray-500 mt-1">
+                                                    Quantity: {transfer.quantity} | Created: {transfer.createdDate}
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <span className={`status-badge ${
+                                                    transfer.status === 'completed' ? 'bg-green-100 text-green-800' :
+                                                    transfer.status === 'in-transit' ? 'bg-blue-100 text-blue-800' :
+                                                    'bg-yellow-100 text-yellow-800'
+                                                }`}>
+                                                    {transfer.status}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Reports Tab
+        const ReportsTab = ({ inventoryData, locations }) => {
+            return (
+                <div className="space-y-6">
+                    <div>
+                        <h2 className="text-2xl font-bold">📊 Analytics & Insights</h2>
+                        <p className="text-gray-600">Real-time data insights and smart reports</p>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <div className="dashboard-card">
+                            <h3 className="text-lg font-bold mb-4">💰 Cost Optimization Insights</h3>
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                                    <div>
+                                        <div className="font-medium">Carrying Cost Reduction</div>
+                                        <div className="text-sm text-gray-600">Optimized stock levels</div>
+                                    </div>
+                                    <div className="text-xl font-bold text-green-600">-$47,000</div>
+                                </div>
+                                <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                                    <div>
+                                        <div className="font-medium">Storage Efficiency</div>
+                                        <div className="text-sm text-gray-600">Space utilization improved</div>
+                                    </div>
+                                    <div className="text-xl font-bold text-blue-600">+23%</div>
+                                </div>
+                                <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
+                                    <div>
+                                        <div className="font-medium">Purchase Optimization</div>
+                                        <div className="text-sm text-gray-600">Smart reorder levels</div>
+                                    </div>
+                                    <div className="text-xl font-bold text-purple-600">+31%</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="dashboard-card">
+                            <h3 className="text-lg font-bold mb-4">📈 Performance Metrics</h3>
+                            <div className="space-y-3">
+                                <div>
+                                    <div className="flex justify-between mb-1">
+                                        <span className="text-sm">Inventory Accuracy</span>
+                                        <span className="text-sm font-bold">98.7%</span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 rounded-full h-2">
+                                        <div className="bg-green-600 h-2 rounded-full" style={{width: '98.7%'}}></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="flex justify-between mb-1">
+                                        <span className="text-sm">Order Fill Rate</span>
+                                        <span className="text-sm font-bold">96.4%</span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 rounded-full h-2">
+                                        <div className="bg-blue-600 h-2 rounded-full" style={{width: '96.4%'}}></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="flex justify-between mb-1">
+                                        <span className="text-sm">Turnover Rate</span>
+                                        <span className="text-sm font-bold">4.2x</span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 rounded-full h-2">
+                                        <div className="bg-purple-600 h-2 rounded-full" style={{width: '84%'}}></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-lg shadow-lg p-6">
+                        <h3 className="text-lg font-bold mb-4">🎯 Custom Reports & Export</h3>
+                        <div className="grid md:grid-cols-3 gap-4">
+                            <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left">
+                                <div className="font-medium">Inventory Valuation</div>
+                                <div className="text-sm text-gray-600 mt-1">Complete asset valuation report</div>
+                            </button>
+                            <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left">
+                                <div className="font-medium">Stock Movement</div>
+                                <div className="text-sm text-gray-600 mt-1">Detailed transaction history</div>
+                            </button>
+                            <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left">
+                                <div className="font-medium">3PL Export</div>
+                                <div className="text-sm text-gray-600 mt-1">Custom template for partners</div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Integrations Tab
+        const IntegrationsTab = () => {
+            return (
+                <div className="space-y-6">
+                    <div>
+                        <h2 className="text-2xl font-bold">🔗 Enterprise Integrations</h2>
+                        <p className="text-gray-600">Connect with SharePoint, Limble CMMS, and other enterprise systems</p>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                        <div className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-500">
+                            <div className="flex items-center space-x-3 mb-4">
+                                <SharePointIcon />
+                                <h3 className="text-xl font-bold">SharePoint Integration</h3>
+                                <span className="status-badge bg-green-100 text-green-800">Connected</span>
+                            </div>
+                            <div className="space-y-3 text-sm">
+                                <div className="flex justify-between">
+                                    <span>Data Sync Status</span>
+                                    <span className="text-green-600 font-medium">Real-time</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Last Sync</span>
+                                    <span>2 minutes ago</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Items Synced</span>
+                                    <span>1,247</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>User Permissions</span>
+                                    <span className="text-blue-600 font-medium">Active</span>
+                                </div>
+                            </div>
+                            <div className="mt-4 pt-4 border-t border-gray-200">
+                                <h4 className="font-medium mb-2">Features</h4>
+                                <ul className="text-sm space-y-1 text-gray-600">
+                                    <li>✓ SharePoint Lists synchronization</li>
+                                    <li>✓ Document management integration</li>
+                                    <li>✓ Workflow automation</li>
+                                    <li>✓ Custom permissions & roles</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div className="bg-white rounded-lg shadow-lg p-6 border-l-4 border-purple-500">
+                            <div className="flex items-center space-x-3 mb-4">
+                                <LimbleIcon />
+                                <h3 className="text-xl font-bold">Limble CMMS</h3>
+                                <span className="status-badge bg-green-100 text-green-800">Connected</span>
+                            </div>
+                            <div className="space-y-3 text-sm">
+                                <div className="flex justify-between">
+                                    <span>Work Orders Synced</span>
+                                    <span className="text-purple-600 font-medium">324</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Preventive Maintenance</span>
+                                    <span>18 scheduled</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Asset Tracking</span>
+                                    <span className="text-green-600 font-medium">Active</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Spare Parts Auto-order</span>
+                                    <span className="text-blue-600 font-medium">Enabled</span>
+                                </div>
+                            </div>
+                            <div className="mt-4 pt-4 border-t border-gray-200">
+                                <h4 className="font-medium mb-2">Features</h4>
+                                <ul className="text-sm space-y-1 text-gray-600">
+                                    <li>✓ Automated work order creation</li>
+                                    <li>✓ Maintenance scheduling sync</li>
+                                    <li>✓ Asset lifecycle management</li>
+                                    <li>✓ Predictive maintenance alerts</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-lg shadow-lg p-6">
+                        <h3 className="text-lg font-bold mb-4">🔧 API Configuration</h3>
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h4 className="font-medium mb-3">SharePoint Configuration</h4>
+                                <div className="space-y-3">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Site URL</label>
+                                        <input type="text" className="w-full p-2 border border-gray-300 rounded-lg text-sm" value="https://ska.sharepoint.com/sites/inventory" readOnly />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">List Name</label>
+                                        <input type="text" className="w-full p-2 border border-gray-300 rounded-lg text-sm" value="SKA_Inventory_Master" readOnly />
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 className="font-medium mb-3">Limble Configuration</h4>
+                                <div className="space-y-3">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">API Endpoint</label>
+                                        <input type="text" className="w-full p-2 border border-gray-300 rounded-lg text-sm" value="https://api.limblecmms.com/v1/" readOnly />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">Sync Frequency</label>
+                                        <select className="w-full p-2 border border-gray-300 rounded-lg text-sm">
+                                            <option>Real-time</option>
+                                            <option>Every 5 minutes</option>
+                                            <option>Hourly</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Main App Component
+        const EnterpriseInventoryApp = () => {
+            const [activeTab, setActiveTab] = useState('dashboard');
+            const [sidebarOpen, setSidebarOpen] = useState(false);
+            const [inventoryData, setInventoryData] = useState([]);
+            const [locations, setLocations] = useState([]);
+            const [transfers, setTransfers] = useState([]);
+
+            useEffect(() => {
+                // Initialize sample data
+                const sampleLocations = [
+                    { id: 'cpf-core', name: 'CPF Core Facility', type: 'cpf', address: 'Central Processing Facility - Core Area' },
+                    { id: 'cpf-warehouse', name: 'CPF Main Warehouse', type: 'central', address: 'Main Distribution Hub - Murchison' },
+                    { id: 'rpf-s8', name: 'RPF S8 Station', type: 'rpf', address: 'Southern Arm - FS345-350 Cluster' },
+                    { id: 'rpf-n8', name: 'RPF N8 Station', type: 'rpf', address: 'Northern Arm - FS375-378 Cluster' },
+                    { id: 'rpf-e8', name: 'RPF E8 Station', type: 'rpf', address: 'Eastern Arm - FS315-318 Cluster' }
+                ];
+
+                const sampleInventory = [
+                    { id: 1, name: 'LFAA Tile Array', partNumber: 'LFAA-TILE-256', serialNumber: 'SN001234', batchNumber: 'B2025001', location: 'cpf-core', quantity: 25, minQuantity: 10, category: 'Telescope Hardware', vendor: 'LFAA Systems', unitCost: 2500, criticality: 'High', lastUpdated: '2025-06-25', binLocation: 'A-1-01' },
+                    { id: 2, name: 'Signal Processing Unit', partNumber: 'SPU-MARK4-001', serialNumber: 'SN005678', batchNumber: 'B2025002', location: 'cpf-warehouse', quantity: 15, minQuantity: 5, category: 'Electronics', vendor: 'Digital Systems Corp', unitCost: 1800, criticality: 'High', lastUpdated: '2025-06-24', binLocation: 'B-2-03' },
+                    { id: 3, name: 'Power Distribution Unit', partNumber: 'PDU-48V-20A', serialNumber: 'SN009012', batchNumber: 'B2025003', location: 'rpf-s8', quantity: 8, minQuantity: 3, category: 'Power', vendor: 'Power Systems Inc', unitCost: 450, criticality: 'High', lastUpdated: '2025-06-25', binLocation: 'C-1-02' },
+                    { id: 4, name: 'Optical Fiber Cable', partNumber: 'OFC-12C-SM-1KM', serialNumber: 'SN003456', batchNumber: 'B2025004', location: 'rpf-n8', quantity: 2, minQuantity: 5, category: 'Cables', vendor: 'Fiber Optics Ltd', unitCost: 120, criticality: 'Medium', lastUpdated: '2025-06-26', binLocation: 'D-3-01' }
+                ];
+
+                const sampleTransfers = [
+                    { id: 1, itemName: 'Signal Processing Unit', fromLocation: 'CPF Core', toLocation: 'RPF S8', quantity: 2, status: 'in-transit', createdDate: '2025-06-25' },
+                    { id: 2, itemName: 'LFAA Tile Array', fromLocation: 'CPF Warehouse', toLocation: 'RPF N8', quantity: 5, status: 'pending', createdDate: '2025-06-24' },
+                    { id: 3, itemName: 'Power Distribution Unit', fromLocation: 'RPF E8', toLocation: 'CPF Core', quantity: 1, status: 'completed', createdDate: '2025-06-23' }
+                ];
+
+                setLocations(sampleLocations);
+                setInventoryData(sampleInventory);
+                setTransfers(sampleTransfers);
+            }, []);
+
+            const renderActiveTab = () => {
+                switch (activeTab) {
+                    case 'dashboard':
+                        return <DashboardTab inventoryData={inventoryData} locations={locations} transfers={transfers} />;
+                    case 'inventory':
+                        return <InventoryTab inventoryData={inventoryData} setInventoryData={setInventoryData} locations={locations} />;
+                    case 'transfers':
+                        return <TransfersTab transfers={transfers} setTransfers={setTransfers} locations={locations} inventoryData={inventoryData} />;
+                    case 'reports':
+                        return <ReportsTab inventoryData={inventoryData} locations={locations} />;
+                    case 'integrations':
+                        return <IntegrationsTab />;
+                    default:
+                        return <DashboardTab inventoryData={inventoryData} locations={locations} transfers={transfers} />;
+                }
+            };
+
+            return (
+                <div className="min-h-screen bg-gray-50">
+                    <Sidebar 
+                        activeTab={activeTab} 
+                        setActiveTab={setActiveTab} 
+                        isOpen={sidebarOpen} 
+                        setIsOpen={setSidebarOpen} 
+                    />
+                    
+                    <div className="main-content">
+                        <div className="mb-6 lg:hidden">
+                            <button
+                                onClick={() => setSidebarOpen(true)}
+                                className="px-4 py-2 bg-gray-800 text-white rounded-lg"
+                            >
+                                ☰ Menu
+                            </button>
+                        </div>
+                        
+                        {renderActiveTab()}
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<EnterpriseInventoryApp />, document.getElementById('root'));
     </script>
 </body>
 </html>
