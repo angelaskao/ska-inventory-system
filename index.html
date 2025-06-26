@@ -38,13 +38,27 @@
         .ska-text { color: #323130; }
         .ska-text-secondary { color: #605e5c; }
         
-        .icon {
-            display: inline-block;
-            width: 1em;
-            height: 1em;
-            stroke-width: 0;
-            stroke: currentColor;
-            fill: currentColor;
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
         }
     </style>
 </head>
@@ -61,10 +75,39 @@
             </svg>
         );
 
+        const PlusIcon = () => (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+        );
+
+        const EditIcon = () => (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+        );
+
+        const DeleteIcon = () => (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+        );
+
+        const SaveIcon = () => (
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+            </svg>
+        );
+
+        const XIcon = () => (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        );
+
         const MapPinIcon = () => (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
         );
 
@@ -83,14 +126,12 @@
         const TruckIcon = () => (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM21 17a2 2 0 11-4 0 2 2 0 014 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
             </svg>
         );
 
         const WrenchIcon = () => (
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
         );
 
@@ -112,18 +153,198 @@
             </svg>
         );
 
-        const FileTextIcon = () => (
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-        );
-
         const SettingsIcon = () => (
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
         );
+
+        // Add Item Modal Component
+        const AddItemModal = ({ isOpen, onClose, onSave, locations }) => {
+            const [formData, setFormData] = useState({
+                name: '',
+                partNumber: '',
+                location: '',
+                quantity: '',
+                minQuantity: '',
+                category: '',
+                vendor: '',
+                criticality: 'Medium'
+            });
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                const newItem = {
+                    ...formData,
+                    id: Date.now(),
+                    quantity: parseInt(formData.quantity),
+                    minQuantity: parseInt(formData.minQuantity),
+                    lastUpdated: new Date().toISOString().split('T')[0],
+                    nextMaintenance: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+                };
+                onSave(newItem);
+                setFormData({
+                    name: '',
+                    partNumber: '',
+                    location: '',
+                    quantity: '',
+                    minQuantity: '',
+                    category: '',
+                    vendor: '',
+                    criticality: 'Medium'
+                });
+                onClose();
+            };
+
+            if (!isOpen) return null;
+
+            return (
+                <div className="modal">
+                    <div className="modal-content">
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-2xl font-bold">Add New Inventory Item</h2>
+                            <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+                                <XIcon />
+                            </button>
+                        </div>
+                        
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium mb-2">Item Name *</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                        placeholder="e.g., GPS Timing Module"
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium mb-2">Part Number *</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={formData.partNumber}
+                                        onChange={(e) => setFormData({...formData, partNumber: e.target.value})}
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                        placeholder="e.g., GPS-TIM-PPS-001"
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium mb-2">Location *</label>
+                                    <select
+                                        required
+                                        value={formData.location}
+                                        onChange={(e) => setFormData({...formData, location: e.target.value})}
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="">Select Location</option>
+                                        {locations.map(loc => (
+                                            <option key={loc.id} value={loc.id}>{loc.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium mb-2">Category *</label>
+                                    <select
+                                        required
+                                        value={formData.category}
+                                        onChange={(e) => setFormData({...formData, category: e.target.value})}
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="">Select Category</option>
+                                        <option value="Telescope Hardware">Telescope Hardware</option>
+                                        <option value="Electronics">Electronics</option>
+                                        <option value="Power">Power</option>
+                                        <option value="Cables">Cables</option>
+                                        <option value="Test Equipment">Test Equipment</option>
+                                        <option value="Tools">Tools</option>
+                                        <option value="Network">Network</option>
+                                        <option value="Cooling">Cooling</option>
+                                        <option value="Enclosures">Enclosures</option>
+                                        <option value="Protection">Protection</option>
+                                        <option value="Timing">Timing</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium mb-2">Quantity *</label>
+                                    <input
+                                        type="number"
+                                        required
+                                        min="0"
+                                        value={formData.quantity}
+                                        onChange={(e) => setFormData({...formData, quantity: e.target.value})}
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                        placeholder="0"
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium mb-2">Min Quantity *</label>
+                                    <input
+                                        type="number"
+                                        required
+                                        min="0"
+                                        value={formData.minQuantity}
+                                        onChange={(e) => setFormData({...formData, minQuantity: e.target.value})}
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                        placeholder="0"
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium mb-2">Vendor *</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={formData.vendor}
+                                        onChange={(e) => setFormData({...formData, vendor: e.target.value})}
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                        placeholder="e.g., Precision Timing Inc"
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium mb-2">Criticality</label>
+                                    <select
+                                        value={formData.criticality}
+                                        onChange={(e) => setFormData({...formData, criticality: e.target.value})}
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="Low">Low</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="High">High</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div className="flex gap-4 pt-6">
+                                <button
+                                    type="submit"
+                                    className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 flex items-center justify-center gap-2"
+                                >
+                                    <SaveIcon />
+                                    Add Item
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={onClose}
+                                    className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-400"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            );
+        };
 
         const SKAInventorySystem = () => {
             const [searchQuery, setSearchQuery] = useState('');
@@ -133,70 +354,28 @@
             const [aiResponse, setAiResponse] = useState('');
             const [isLoading, setIsLoading] = useState(false);
             const [lastSync, setLastSync] = useState('');
+            const [showAddModal, setShowAddModal] = useState(false);
+            const [editingItem, setEditingItem] = useState(null);
 
             useEffect(() => {
                 setLastSync(new Date().toLocaleString());
 
                 const sampleLocations = [
-                    // Central Processing Facilities
                     { id: 'cpf-core', name: 'CPF Core Facility', type: 'cpf', address: 'Central Processing Facility - Core Area', capacity: 15000, contact: 'facility-manager@ska.org' },
                     { id: 'cpf-warehouse', name: 'CPF Main Warehouse', type: 'central', address: 'Main Distribution Hub - Murchison', capacity: 10000, contact: 'warehouse@ska.org' },
-                    
-                    // Remote Processing Facilities - Southern Arm
                     { id: 'rpf-s8', name: 'RPF S8 Station', type: 'rpf', address: 'Southern Arm - FS345-350 Cluster', capacity: 800, contact: 'south-ops@ska.org' },
-                    { id: 'rpf-s9', name: 'RPF S9 Station', type: 'rpf', address: 'Southern Arm - FS352-355 Cluster', capacity: 600, contact: 'south-ops@ska.org' },
-                    { id: 'rpf-s10', name: 'RPF S10 Station', type: 'rpf', address: 'Southern Arm - FS429-434 Cluster', capacity: 800, contact: 'south-ops@ska.org' },
-                    
-                    // Remote Processing Facilities - Northern Arm
                     { id: 'rpf-n8', name: 'RPF N8 Station', type: 'rpf', address: 'Northern Arm - FS375-378 Cluster', capacity: 600, contact: 'north-ops@ska.org' },
-                    { id: 'rpf-n13', name: 'RPF N13 Station', type: 'rpf', address: 'Northern Arm - FS489-492 Cluster', capacity: 600, contact: 'north-ops@ska.org' },
-                    
-                    // Remote Processing Facilities - Eastern Arm
                     { id: 'rpf-e8', name: 'RPF E8 Station', type: 'rpf', address: 'Eastern Arm - FS315-318 Cluster', capacity: 600, contact: 'east-ops@ska.org' },
-                    { id: 'rpf-e13', name: 'RPF E13 Station', type: 'rpf', address: 'Eastern Arm - FS405-408 Cluster', capacity: 600, contact: 'east-ops@ska.org' },
-                    
-                    // Field Station Clusters
                     { id: 'fs-core-01', name: 'Core Field Stations 1-50', type: 'field-cluster', address: 'Core Area - Station Block Alpha', capacity: 500, contact: 'core-maint@ska.org' },
-                    { id: 'fs-core-02', name: 'Core Field Stations 51-100', type: 'field-cluster', address: 'Core Area - Station Block Beta', capacity: 500, contact: 'core-maint@ska.org' },
-                    { id: 'fs-core-03', name: 'Core Field Stations 101-150', type: 'field-cluster', address: 'Core Area - Station Block Gamma', capacity: 500, contact: 'core-maint@ska.org' },
-                    { id: 'fs-core-04', name: 'Core Field Stations 151-199', type: 'field-cluster', address: 'Core Area - Station Block Delta', capacity: 400, contact: 'core-maint@ska.org' },
-                    
-                    // Mobile Assets
                     { id: 'trailer-maint-01', name: 'Maintenance Trailer #1', type: 'trailer', address: 'Mobile - Currently at RPF S8', capacity: 200, contact: 'mobile-team@ska.org' },
-                    { id: 'trailer-spare-02', name: 'Spare Parts Trailer #2', type: 'storage-trailer', address: 'Mobile - En route to Northern Arm', capacity: 300, contact: 'mobile-team@ska.org' },
                     { id: 'ute-tech-01', name: 'Field Tech Ute - Alex', type: 'ute', address: 'Mobile - Eastern Arm maintenance', capacity: 50, contact: 'alex.tech@ska.org' },
-                    { id: 'ute-tech-02', name: 'Field Tech Ute - Jordan', type: 'ute', address: 'Mobile - Core area patrol', capacity: 50, contact: 'jordan.tech@ska.org' },
-                    
-                    // In-town facility
                     { id: 'in-town', name: 'Geraldton Supply Depot', type: 'in-town', address: 'Urban Distribution Center - Geraldton', capacity: 1500, contact: 'geraldton@ska.org' }
                 ];
 
                 const sampleInventory = [
-                    // Telescope-specific equipment
                     { id: 1, name: 'Low Frequency Aperture Array Tile', partNumber: 'LFAA-TILE-256', location: 'cpf-core', quantity: 25, minQuantity: 10, category: 'Telescope Hardware', vendor: 'LFAA Systems', lastUpdated: '2025-06-25', criticality: 'High', nextMaintenance: '2025-07-15' },
                     { id: 2, name: 'Signal Processing Unit', partNumber: 'SPU-MARK4-001', location: 'cpf-warehouse', quantity: 15, minQuantity: 5, category: 'Electronics', vendor: 'Digital Systems Corp', lastUpdated: '2025-06-24', criticality: 'High', nextMaintenance: '2025-08-01' },
-                    { id: 3, name: 'Optical Fiber Cable 12-core', partNumber: 'OFC-12C-SM-1KM', location: 'rpf-s8', quantity: 50, minQuantity: 20, category: 'Cables', vendor: 'Fiber Optics Ltd', lastUpdated: '2025-06-26', criticality: 'Medium', nextMaintenance: '2025-12-01' },
-                    
-                    // Power systems
-                    { id: 4, name: 'Power Distribution Unit 48V', partNumber: 'PDU-48V-20A', location: 'rpf-n8', quantity: 8, minQuantity: 3, category: 'Power', vendor: 'Power Systems Inc', lastUpdated: '2025-06-25', criticality: 'High', nextMaintenance: '2025-07-30' },
-                    { id: 5, name: 'UPS Battery Module', partNumber: 'UPS-BAT-12V-100AH', location: 'cpf-warehouse', quantity: 30, minQuantity: 15, category: 'Power', vendor: 'Battery Solutions', lastUpdated: '2025-06-23', criticality: 'High', nextMaintenance: '2025-09-01' },
-                    
-                    // Field maintenance equipment
-                    { id: 6, name: 'Spectrum Analyzer Portable', partNumber: 'SA-PORT-9KHZ-3GHZ', location: 'ute-tech-01', quantity: 1, minQuantity: 1, category: 'Test Equipment', vendor: 'Test Instruments Co', lastUpdated: '2025-06-26', criticality: 'Medium', nextMaintenance: '2025-08-15' },
-                    { id: 7, name: 'Antenna Alignment Tool', partNumber: 'AAT-PRECISION-001', location: 'trailer-maint-01', quantity: 4, minQuantity: 2, category: 'Tools', vendor: 'Precision Tools Ltd', lastUpdated: '2025-06-25', criticality: 'Medium', nextMaintenance: '2025-10-01' },
-                    
-                    // Environmental protection
-                    { id: 8, name: 'Environmental Enclosure IP65', partNumber: 'ENV-ENC-IP65-600x400', location: 'fs-core-01', quantity: 12, minQuantity: 8, category: 'Enclosures', vendor: 'Weather Protection Co', lastUpdated: '2025-06-26', criticality: 'Medium', nextMaintenance: '2026-01-01' },
-                    { id: 9, name: 'Cooling Fan 48V DC', partNumber: 'FAN-48V-120MM', location: 'rpf-e8', quantity: 20, minQuantity: 10, category: 'Cooling', vendor: 'Thermal Solutions', lastUpdated: '2025-06-25', criticality: 'Low', nextMaintenance: '2025-11-01' },
-                    
-                    // Network equipment
-                    { id: 10, name: 'Ethernet Switch 48-port Managed', partNumber: 'ETH-SW-48P-GIG', location: 'rpf-s10', quantity: 6, minQuantity: 2, category: 'Network', vendor: 'Network Systems Ltd', lastUpdated: '2025-06-24', criticality: 'High', nextMaintenance: '2025-08-30' },
-                    { id: 11, name: 'GPS Timing Module', partNumber: 'GPS-TIM-PPS-001', location: 'cpf-core', quantity: 8, minQuantity: 3, category: 'Timing', vendor: 'Precision Timing Inc', lastUpdated: '2025-06-25', criticality: 'High', nextMaintenance: '2025-07-20' },
-                    
-                    // Standard maintenance items
-                    { id: 12, name: 'Coaxial Cable Assembly RG-213', partNumber: 'COAX-RG213-10M-NTYPE', location: 'in-town', quantity: 45, minQuantity: 20, category: 'Cables', vendor: 'Cable Assemblies Co', lastUpdated: '2025-06-26', criticality: 'Low', nextMaintenance: '2026-06-01' },
-                    { id: 13, name: 'Digital Multimeter Handheld', partNumber: 'DMM-HAND-TRMS-001', location: 'ute-tech-02', quantity: 2, minQuantity: 1, category: 'Test Equipment', vendor: 'Measurement Tools Inc', lastUpdated: '2025-06-25', criticality: 'Medium', nextMaintenance: '2025-12-15' },
-                    { id: 14, name: 'Surge Protection Device', partNumber: 'SPD-AC-275V-40KA', location: 'trailer-spare-02', quantity: 15, minQuantity: 8, category: 'Protection', vendor: 'Protection Systems Ltd', lastUpdated: '2025-06-24', criticality: 'Medium', nextMaintenance: '2025-09-15' }
+                    { id: 3, name: 'GPS Timing Module', partNumber: 'GPS-TIM-PPS-001', location: 'cpf-core', quantity: 8, minQuantity: 3, category: 'Timing', vendor: 'Precision Timing Inc', lastUpdated: '2025-06-25', criticality: 'High', nextMaintenance: '2025-07-20' }
                 ];
 
                 setLocations(sampleLocations);
@@ -269,58 +448,66 @@
                             const location = locations.find(loc => loc.id === item.location);
                             response += `• ${item.name} (${item.partNumber})\n  Location: ${location?.name} | Qty: ${item.quantity} | Criticality: ${item.criticality}\n`;
                         });
-                        response += `\n📋 RECOMMENDATION: Schedule maintenance review for high-criticality items before ${telescopeItems.find(i => i.criticality === 'High')?.nextMaintenance}`;
-                    } else if (query.includes('power') || query.includes('battery') || query.includes('ups')) {
-                        const powerItems = inventoryData.filter(item => 
-                            item.category.toLowerCase().includes('power') || 
-                            item.name.toLowerCase().includes('battery') ||
-                            item.name.toLowerCase().includes('ups')
-                        );
-                        response = `⚡ POWER SYSTEMS INVENTORY\n\nPower infrastructure across ${locations.length} locations:\n\n`;
-                        powerItems.forEach(item => {
-                            const location = locations.find(loc => loc.id === item.location);
-                            response += `• ${item.name} | ${location?.name} | Stock: ${item.quantity} units\n`;
-                        });
-                        response += `\n🔋 Total power units: ${powerItems.reduce((sum, item) => sum + item.quantity, 0)}\n📧 Contact: power-systems@ska.org for technical support`;
-                    } else if (query.includes('critical') || query.includes('high priority')) {
-                        const criticalItems = inventoryData.filter(item => item.criticality === 'High');
-                        response = `🚨 HIGH CRITICALITY ITEMS\n\nMission-critical components requiring priority attention:\n\n`;
-                        criticalItems.forEach(item => {
-                            const location = locations.find(loc => loc.id === item.location);
-                            response += `• ${item.name} | ${location?.name}\n  Next Maintenance: ${item.nextMaintenance} | Stock: ${item.quantity}/${item.minQuantity}\n`;
-                        });
-                        response += `\n⚠️  ACTION REQUIRED: Review maintenance schedules and stock levels for these items`;
-                    } else if (query.includes('low stock') || query.includes('reorder')) {
-                        const lowStockItems = inventoryData.filter(item => item.quantity <= item.minQuantity);
-                        response = `📦 LOW STOCK ALERT\n\nItems requiring immediate reorder:\n\n`;
-                        lowStockItems.forEach(item => {
-                            const location = locations.find(loc => loc.id === item.location);
-                            response += `• ${item.name} | ${location?.name}\n  Current: ${item.quantity} | Min Required: ${item.minQuantity} | Vendor: ${item.vendor}\n`;
-                        });
-                        response += `\n🛒 Contact procurement@ska.org to initiate purchase orders`;
+                        response += `\n📋 RECOMMENDATION: Schedule maintenance review for high-criticality items`;
+                    } else if (query.includes('add') || query.includes('new')) {
+                        response = `➕ ADD NEW ITEMS\n\nTo add new inventory items:\n1. Click the "Add New Item" button\n2. Fill in all required fields\n3. Select appropriate location and category\n4. Save the item\n\n📝 Required fields: Name, Part Number, Location, Category, Quantity, Min Quantity, Vendor`;
+                    } else if (query.includes('edit') || query.includes('update')) {
+                        response = `✏️ EDIT INVENTORY\n\nTo edit existing items:\n1. Find the item in the table below\n2. Click the Edit button (pencil icon)\n3. Update the fields as needed\n4. Save changes\n\n🔧 You can update quantities, locations, vendors, and other details`;
+                    } else if (query.includes('delete') || query.includes('remove')) {
+                        response = `🗑️ DELETE ITEMS\n\nTo remove items from inventory:\n1. Locate the item in the table\n2. Click the Delete button (trash icon)\n3. Confirm the deletion\n\n⚠️ Warning: Deleted items cannot be recovered. Consider reducing quantity to 0 instead.`;
                     } else {
-                        response = `🔍 SEARCH RESULTS\n\nSearching SKA inventory for "${searchQuery}"...\n\nFound ${filteredInventory.length} matching items across ${locations.length} facilities.\n\n💡 Try these queries:\n• "Show me critical items"\n• "Power systems status"\n• "Low stock alerts"\n• "Telescope equipment review"`;
+                        response = `🔍 SEARCH RESULTS\n\nFound ${filteredInventory.length} items matching "${searchQuery}"\n\n💡 Try these commands:\n• "Add new item" - Learn how to add inventory\n• "Edit items" - Learn how to modify inventory\n• "Show telescope equipment"\n• "Power systems status"`;
                     }
 
                     setAiResponse(response);
                 } catch (error) {
-                    setAiResponse('❌ Error processing request. Please try again or contact IT support.');
+                    setAiResponse('❌ Error processing request. Please try again.');
                 } finally {
                     setIsLoading(false);
                 }
             };
 
-            const generateReport = () => {
-                window.print();
+            const handleAddItem = (newItem) => {
+                setInventoryData([...inventoryData, newItem]);
+                alert('✅ Item added successfully!');
             };
 
-            const getLowStockItems = () => {
-                return inventoryData.filter(item => item.quantity <= item.minQuantity);
+            const handleEditItem = (itemId) => {
+                const item = inventoryData.find(i => i.id === itemId);
+                if (item) {
+                    const newQuantity = prompt(`Edit quantity for ${item.name}:`, item.quantity);
+                    if (newQuantity !== null && !isNaN(newQuantity)) {
+                        setInventoryData(inventoryData.map(i => 
+                            i.id === itemId 
+                                ? {...i, quantity: parseInt(newQuantity), lastUpdated: new Date().toISOString().split('T')[0]}
+                                : i
+                        ));
+                        alert('✅ Item updated successfully!');
+                    }
+                }
             };
 
-            const getCriticalItems = () => {
-                return inventoryData.filter(item => item.criticality === 'High');
+            const handleDeleteItem = (itemId) => {
+                const item = inventoryData.find(i => i.id === itemId);
+                if (item && confirm(`Are you sure you want to delete "${item.name}"?`)) {
+                    setInventoryData(inventoryData.filter(i => i.id !== itemId));
+                    alert('✅ Item deleted successfully!');
+                }
             };
+
+            const exportData = () => {
+                const dataStr = JSON.stringify(inventoryData, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'ska-inventory-export.json';
+                link.click();
+                alert('📥 Data exported successfully!');
+            };
+
+            const getLowStockItems = () => inventoryData.filter(item => item.quantity <= item.minQuantity);
+            const getCriticalItems = () => inventoryData.filter(item => item.criticality === 'High');
 
             const lowStockItems = getLowStockItems();
             const criticalItems = getCriticalItems();
@@ -332,49 +519,41 @@
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
                             <div>
                                 <h1 className="text-4xl font-bold ska-text mb-2">SKA Telescope Inventory Management</h1>
-                                <p className="ska-text-secondary text-lg">{`Multi-location tracking across 512 stations | Last sync: ${lastSync}`}</p>
+                                <p className="ska-text-secondary text-lg">{`Multi-location tracking | Last sync: ${lastSync}`}</p>
                             </div>
                             <div className="flex gap-3 no-print mt-4 md:mt-0">
                                 <button
-                                    onClick={generateReport}
+                                    onClick={() => setShowAddModal(true)}
+                                    className="px-6 py-3 ska-primary text-white rounded-lg font-medium hover:bg-blue-700 flex items-center gap-2"
+                                >
+                                    <PlusIcon />
+                                    Add New Item
+                                </button>
+                                <button
+                                    onClick={exportData}
                                     className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center gap-2 font-medium"
                                 >
-                                    <FileTextIcon />
-                                    Print Report
+                                    <SaveIcon />
+                                    Export Data
                                 </button>
                             </div>
                         </div>
                     </div>
 
                     {/* Stats Dashboard */}
-                    <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                         <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
                             <div className="flex items-center">
-                                <div className="w-8 h-8 text-blue-500">
-                                    <PackageIcon />
-                                </div>
+                                <div className="w-8 h-8 text-blue-500"><PackageIcon /></div>
                                 <div className="ml-4">
                                     <p className="text-sm font-medium text-gray-600">Total Items</p>
                                     <p className="text-2xl font-bold text-gray-900">{inventoryData.reduce((sum, item) => sum + item.quantity, 0)}</p>
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
-                            <div className="flex items-center">
-                                <div className="w-8 h-8 text-green-500">
-                                    <MapPinIcon />
-                                </div>
-                                <div className="ml-4">
-                                    <p className="text-sm font-medium text-gray-600">Locations</p>
-                                    <p className="text-2xl font-bold text-gray-900">{locations.length}</p>
-                                </div>
-                            </div>
-                        </div>
                         <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500">
                             <div className="flex items-center">
-                                <div className="w-8 h-8 text-red-500">
-                                    <AlertTriangleIcon />
-                                </div>
+                                <div className="w-8 h-8 text-red-500"><AlertTriangleIcon /></div>
                                 <div className="ml-4">
                                     <p className="text-sm font-medium text-gray-600">Low Stock</p>
                                     <p className="text-2xl font-bold text-gray-900">{lowStockItems.length}</p>
@@ -383,23 +562,19 @@
                         </div>
                         <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
                             <div className="flex items-center">
-                                <div className="text-purple-500">
-                                    <SettingsIcon />
-                                </div>
+                                <div className="text-purple-500"><SettingsIcon /></div>
                                 <div className="ml-4">
                                     <p className="text-sm font-medium text-gray-600">Critical Items</p>
                                     <p className="text-2xl font-bold text-gray-900">{criticalItems.length}</p>
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500">
+                        <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
                             <div className="flex items-center">
-                                <div className="w-8 h-8 text-yellow-500">
-                                    <TruckIcon />
-                                </div>
+                                <div className="w-8 h-8 text-green-500"><MapPinIcon /></div>
                                 <div className="ml-4">
-                                    <p className="text-sm font-medium text-gray-600">Mobile Assets</p>
-                                    <p className="text-2xl font-bold text-gray-900">{locations.filter(loc => loc.type === 'trailer' || loc.type === 'storage-trailer' || loc.type === 'ute').length}</p>
+                                    <p className="text-sm font-medium text-gray-600">Locations</p>
+                                    <p className="text-2xl font-bold text-gray-900">{locations.length}</p>
                                 </div>
                             </div>
                         </div>
@@ -412,7 +587,7 @@
                             <div className="flex-1">
                                 <input
                                     type="text"
-                                    placeholder="Ask about SKA inventory... e.g., 'Show me critical items' or 'Power systems status'"
+                                    placeholder="Try: 'how to add new item', 'edit inventory', 'show telescope equipment'"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     onKeyPress={(e) => e.key === 'Enter' && handleAISearch()}
@@ -431,7 +606,7 @@
                         
                         {aiResponse && (
                             <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                                <h3 className="font-bold text-blue-900 mb-3 text-lg">🤖 AI Analysis Results:</h3>
+                                <h3 className="font-bold text-blue-900 mb-3 text-lg">🤖 AI Assistant:</h3>
                                 <pre className="text-blue-800 whitespace-pre-wrap font-mono text-sm leading-relaxed">{aiResponse}</pre>
                             </div>
                         )}
@@ -444,7 +619,7 @@
                                 <label className="block text-sm font-medium ska-text mb-3">Search Inventory</label>
                                 <input
                                     type="text"
-                                    placeholder="Search by name, part number, category, or location..."
+                                    placeholder="Search by name, part number, or category..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -477,11 +652,11 @@
                                 <thead className="ska-secondary">
                                     <tr>
                                         <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item Details</th>
-                                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location & Contact</th>
+                                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
                                         <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Inventory</th>
                                         <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Maintenance</th>
                                         <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vendor</th>
+                                        <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider no-print">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
@@ -499,17 +674,15 @@
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-6">
-                                                    <div className="flex items-center mb-3">
+                                                    <div className="flex items-center mb-2">
                                                         {getLocationIcon(location?.type)}
                                                         <div className="ml-3">
                                                             <div className="text-sm font-semibold ska-text">{location?.name}</div>
-                                                            <div className="text-xs ska-text-secondary mt-1">{location?.address}</div>
                                                         </div>
                                                     </div>
                                                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getLocationTypeColor(location?.type)}`}>
                                                         {location?.type.replace('-', ' ')}
                                                     </span>
-                                                    {location?.contact && <div className="text-xs text-blue-600 mt-2">{location.contact}</div>}
                                                 </td>
                                                 <td className="px-6 py-6">
                                                     <div className="text-sm font-semibold ska-text">{`${item.quantity} units`}</div>
@@ -534,11 +707,25 @@
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-6">
-                                                    <div className="text-sm font-semibold ska-text">{item.nextMaintenance}</div>
-                                                    <div className="text-xs ska-text-secondary mt-1">{`Updated: ${item.lastUpdated}`}</div>
-                                                </td>
                                                 <td className="px-6 py-6 text-sm ska-text font-medium">{item.vendor}</td>
+                                                <td className="px-6 py-6 no-print">
+                                                    <div className="flex gap-2">
+                                                        <button
+                                                            onClick={() => handleEditItem(item.id)}
+                                                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                            title="Edit Item"
+                                                        >
+                                                            <EditIcon />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDeleteItem(item.id)}
+                                                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                            title="Delete Item"
+                                                        >
+                                                            <DeleteIcon />
+                                                        </button>
+                                                    </div>
+                                                </td>
                                             </tr>
                                         );
                                     })}
@@ -546,6 +733,14 @@
                             </table>
                         </div>
                     </div>
+
+                    {/* Add Item Modal */}
+                    <AddItemModal 
+                        isOpen={showAddModal}
+                        onClose={() => setShowAddModal(false)}
+                        onSave={handleAddItem}
+                        locations={locations}
+                    />
                 </div>
             );
         };
