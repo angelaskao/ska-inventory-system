@@ -7,491 +7,493 @@
   <meta name="Generator" content="Cocoa HTML Writer">
   <meta name="CocoaVersion" content="2575.6">
   <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; -webkit-text-stroke: #000000}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; -webkit-text-stroke: #000000; min-height: 14.0px}
+    span.s1 {font-kerning: none}
+    span.s2 {font: 12.0px 'Apple Color Emoji'; font-kerning: none}
   </style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="en"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;SKA Telescope Inventory Management - SharePoint Integration&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.22.5/babel.min.js"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>background: #f8f9fa;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* SharePoint-compatible styling */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.sharepoint-container {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>max-width: 100%;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>margin: 0;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>padding: 20px;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* Print styles */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>@media print {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>.no-print { display: none !important; }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>body { background: white !important; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* Mobile optimizations */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>@media (max-width: 768px) {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>.sharepoint-container { padding: 10px; }</p>
-<p class="p1"><span class="Apple-converted-space">            </span>.mobile-stack { flex-direction: column !important; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p2"><span class="Apple-converted-space">        </span></p>
-<p class="p1"><span class="Apple-converted-space">        </span>/* SharePoint theme colors */</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.sp-primary { background-color: #0078d4; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.sp-primary-hover:hover { background-color: #106ebe; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.sp-secondary { background-color: #f3f2f1; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.sp-text { color: #323130; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.sp-text-secondary { color: #605e5c; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="root"&gt;&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script type="text/babel"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const { useState, useEffect } = React;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const { Search, MapPin, Package, AlertTriangle, Truck, Wrench, Building2, Home, Car, Download, Share2, FileText, Settings } = lucide;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>const SharePointInventorySystem = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const [searchQuery, setSearchQuery] = useState('');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const [selectedLocation, setSelectedLocation] = useState('all');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const [inventoryData, setInventoryData] = useState([]);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const [locations, setLocations] = useState([]);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const [aiResponse, setAiResponse] = useState('');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const [isLoading, setIsLoading] = useState(false);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const [currentUser, setCurrentUser] = useState('');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const [lastSync, setLastSync] = useState('');</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>// Initialize data and SharePoint context</p>
-<p class="p1"><span class="Apple-converted-space">            </span>useEffect(() =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Set current user (in real SharePoint, this would come from _spPageContextInfo)</p>
-<p class="p1"><span class="Apple-converted-space">                </span>setCurrentUser('Current User');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>setLastSync(new Date().toLocaleString());</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>const sampleLocations = [</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// Central Processing Facilities</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 'cpf-core', name: 'CPF Core Facility', type: 'cpf', address: 'Central Processing Facility - Core Area', capacity: 15000, contact: 'facility-manager@ska.org' },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 'cpf-warehouse', name: 'CPF Main Warehouse', type: 'central', address: 'Main Distribution Hub - Murchison', capacity: 10000, contact: 'warehouse@ska.org' },</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// Remote Processing Facilities - Southern Arm</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 'rpf-s8', name: 'RPF S8 Station', type: 'rpf', address: 'Southern Arm - FS345-350 Cluster', capacity: 800, contact: 'south-ops@ska.org' },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 'rpf-s9', name: 'RPF S9 Station', type: 'rpf', address: 'Southern Arm - FS352-355 Cluster', capacity: 600, contact: 'south-ops@ska.org' },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 'rpf-s10', name: 'RPF S10 Station', type: 'rpf', address: 'Southern Arm - FS429-434 Cluster', capacity: 800, contact: 'south-ops@ska.org' },</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// Remote Processing Facilities - Northern Arm</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 'rpf-n8', name: 'RPF N8 Station', type: 'rpf', address: 'Northern Arm - FS375-378 Cluster', capacity: 600, contact: 'north-ops@ska.org' },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 'rpf-n13', name: 'RPF N13 Station', type: 'rpf', address: 'Northern Arm - FS489-492 Cluster', capacity: 600, contact: 'north-ops@ska.org' },</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// Remote Processing Facilities - Eastern Arm</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 'rpf-e8', name: 'RPF E8 Station', type: 'rpf', address: 'Eastern Arm - FS315-318 Cluster', capacity: 600, contact: 'east-ops@ska.org' },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 'rpf-e13', name: 'RPF E13 Station', type: 'rpf', address: 'Eastern Arm - FS405-408 Cluster', capacity: 600, contact: 'east-ops@ska.org' },</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// Field Station Clusters</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 'fs-core-01', name: 'Core Field Stations 1-50', type: 'field-cluster', address: 'Core Area - Station Block Alpha', capacity: 500, contact: 'core-maint@ska.org' },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 'fs-core-02', name: 'Core Field Stations 51-100', type: 'field-cluster', address: 'Core Area - Station Block Beta', capacity: 500, contact: 'core-maint@ska.org' },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 'fs-core-03', name: 'Core Field Stations 101-150', type: 'field-cluster', address: 'Core Area - Station Block Gamma', capacity: 500, contact: 'core-maint@ska.org' },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 'fs-core-04', name: 'Core Field Stations 151-199', type: 'field-cluster', address: 'Core Area - Station Block Delta', capacity: 400, contact: 'core-maint@ska.org' },</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// Mobile Assets</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 'trailer-maint-01', name: 'Maintenance Trailer #1', type: 'trailer', address: 'Mobile - Currently at RPF S8', capacity: 200, contact: 'mobile-team@ska.org' },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 'trailer-spare-02', name: 'Spare Parts Trailer #2', type: 'storage-trailer', address: 'Mobile - En route to Northern Arm', capacity: 300, contact: 'mobile-team@ska.org' },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 'ute-tech-01', name: 'Field Tech Ute - Alex', type: 'ute', address: 'Mobile - Eastern Arm maintenance', capacity: 50, contact: 'alex.tech@ska.org' },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 'ute-tech-02', name: 'Field Tech Ute - Jordan', type: 'ute', address: 'Mobile - Core area patrol', capacity: 50, contact: 'jordan.tech@ska.org' },</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// In-town facility</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 'in-town', name: 'Geraldton Supply Depot', type: 'in-town', address: 'Urban Distribution Center - Geraldton', capacity: 1500, contact: 'geraldton@ska.org' }</p>
-<p class="p1"><span class="Apple-converted-space">                </span>];</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>const sampleInventory = [</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// Telescope-specific equipment</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 1, name: 'Low Frequency Aperture Array Tile', partNumber: 'LFAA-TILE-256', location: 'cpf-core', quantity: 25, minQuantity: 10, category: 'Telescope Hardware', vendor: 'LFAA Systems', lastUpdated: '2025-06-25', criticality: 'High', nextMaintenance: '2025-07-15' },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 2, name: 'Signal Processing Unit', partNumber: 'SPU-MARK4-001', location: 'cpf-warehouse', quantity: 15, minQuantity: 5, category: 'Electronics', vendor: 'Digital Systems Corp', lastUpdated: '2025-06-24', criticality: 'High', nextMaintenance: '2025-08-01' },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 3, name: 'Optical Fiber Cable 12-core', partNumber: 'OFC-12C-SM-1KM', location: 'rpf-s8', quantity: 50, minQuantity: 20, category: 'Cables', vendor: 'Fiber Optics Ltd', lastUpdated: '2025-06-26', criticality: 'Medium', nextMaintenance: '2025-12-01' },</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// Power systems</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 4, name: 'Power Distribution Unit 48V', partNumber: 'PDU-48V-20A', location: 'rpf-n8', quantity: 8, minQuantity: 3, category: 'Power', vendor: 'Power Systems Inc', lastUpdated: '2025-06-25', criticality: 'High', nextMaintenance: '2025-07-30' },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 5, name: 'UPS Battery Module', partNumber: 'UPS-BAT-12V-100AH', location: 'cpf-warehouse', quantity: 30, minQuantity: 15, category: 'Power', vendor: 'Battery Solutions', lastUpdated: '2025-06-23', criticality: 'High', nextMaintenance: '2025-09-01' },</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// Field maintenance equipment</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 6, name: 'Spectrum Analyzer Portable', partNumber: 'SA-PORT-9KHZ-3GHZ', location: 'ute-tech-01', quantity: 1, minQuantity: 1, category: 'Test Equipment', vendor: 'Test Instruments Co', lastUpdated: '2025-06-26', criticality: 'Medium', nextMaintenance: '2025-08-15' },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 7, name: 'Antenna Alignment Tool', partNumber: 'AAT-PRECISION-001', location: 'trailer-maint-01', quantity: 4, minQuantity: 2, category: 'Tools', vendor: 'Precision Tools Ltd', lastUpdated: '2025-06-25', criticality: 'Medium', nextMaintenance: '2025-10-01' },</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// Environmental protection</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 8, name: 'Environmental Enclosure IP65', partNumber: 'ENV-ENC-IP65-600x400', location: 'fs-core-01', quantity: 12, minQuantity: 8, category: 'Enclosures', vendor: 'Weather Protection Co', lastUpdated: '2025-06-26', criticality: 'Medium', nextMaintenance: '2026-01-01' },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 9, name: 'Cooling Fan 48V DC', partNumber: 'FAN-48V-120MM', location: 'rpf-e8', quantity: 20, minQuantity: 10, category: 'Cooling', vendor: 'Thermal Solutions', lastUpdated: '2025-06-25', criticality: 'Low', nextMaintenance: '2025-11-01' },</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// Network equipment</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 10, name: 'Ethernet Switch 48-port Managed', partNumber: 'ETH-SW-48P-GIG', location: 'rpf-s10', quantity: 6, minQuantity: 2, category: 'Network', vendor: 'Network Systems Ltd', lastUpdated: '2025-06-24', criticality: 'High', nextMaintenance: '2025-08-30' },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 11, name: 'GPS Timing Module', partNumber: 'GPS-TIM-PPS-001', location: 'cpf-core', quantity: 8, minQuantity: 3, category: 'Timing', vendor: 'Precision Timing Inc', lastUpdated: '2025-06-25', criticality: 'High', nextMaintenance: '2025-07-20' },</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>// Standard maintenance items</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 12, name: 'Coaxial Cable Assembly RG-213', partNumber: 'COAX-RG213-10M-NTYPE', location: 'in-town', quantity: 45, minQuantity: 20, category: 'Cables', vendor: 'Cable Assemblies Co', lastUpdated: '2025-06-26', criticality: 'Low', nextMaintenance: '2026-06-01' },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 13, name: 'Digital Multimeter Handheld', partNumber: 'DMM-HAND-TRMS-001', location: 'ute-tech-02', quantity: 2, minQuantity: 1, category: 'Test Equipment', vendor: 'Measurement Tools Inc', lastUpdated: '2025-06-25', criticality: 'Medium', nextMaintenance: '2025-12-15' },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>{ id: 14, name: 'Surge Protection Device', partNumber: 'SPD-AC-275V-40KA', location: 'trailer-spare-02', quantity: 15, minQuantity: 8, category: 'Protection', vendor: 'Protection Systems Ltd', lastUpdated: '2025-06-24', criticality: 'Medium', nextMaintenance: '2025-09-15' }</p>
-<p class="p1"><span class="Apple-converted-space">                </span>];</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>setLocations(sampleLocations);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>setInventoryData(sampleInventory);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}, []);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const getLocationIcon = (type) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>switch (type) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>case 'cpf': return React.createElement(Building2, { className: "w-4 h-4" });</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>case 'central': return React.createElement(Building2, { className: "w-4 h-4" });</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>case 'rpf': return React.createElement(Wrench, { className: "w-4 h-4" });</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>case 'field-cluster': return React.createElement(Package, { className: "w-4 h-4" });</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>case 'in-town': return React.createElement(Home, { className: "w-4 h-4" });</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>case 'trailer': case 'storage-trailer': return React.createElement(Truck, { className: "w-4 h-4" });</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>case 'ute': return React.createElement(Car, { className: "w-4 h-4" });</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>default: return React.createElement(MapPin, { className: "w-4 h-4" });</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const getLocationTypeColor = (type) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>switch (type) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>case 'cpf': return 'bg-blue-100 text-blue-800';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>case 'central': return 'bg-blue-100 text-blue-800';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>case 'rpf': return 'bg-green-100 text-green-800';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>case 'field-cluster': return 'bg-purple-100 text-purple-800';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>case 'in-town': return 'bg-orange-100 text-orange-800';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>case 'trailer': case 'storage-trailer': return 'bg-yellow-100 text-yellow-800';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>case 'ute': return 'bg-red-100 text-red-800';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>default: return 'bg-gray-100 text-gray-800';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const getCriticalityColor = (criticality) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>switch (criticality) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>case 'High': return 'bg-red-100 text-red-800';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>case 'Medium': return 'bg-yellow-100 text-yellow-800';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>case 'Low': return 'bg-green-100 text-green-800';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>default: return 'bg-gray-100 text-gray-800';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const filteredInventory = inventoryData.filter(item =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||</p>
-<p class="p1"><span class="Apple-converted-space">                                     </span>item.partNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||</p>
-<p class="p1"><span class="Apple-converted-space">                                     </span>item.category.toLowerCase().includes(searchQuery.toLowerCase());</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const matchesLocation = selectedLocation === 'all' || item.location === selectedLocation;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>return matchesSearch &amp;&amp; matchesLocation;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const handleAISearch = async () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (!searchQuery.trim()) return;</p>
-<p class="p2"><span class="Apple-converted-space">                </span></p>
-<p class="p1"><span class="Apple-converted-space">                </span>setIsLoading(true);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>setAiResponse('');</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>try {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>await new Promise(resolve =&gt; setTimeout(resolve, 1500));</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>let response = '';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const query = searchQuery.toLowerCase();</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>if (query.includes('telescope') || query.includes('lfaa') || query.includes('antenna')) {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>const telescopeItems = inventoryData.filter(item =&gt;<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                            </span>item.category.toLowerCase().includes('telescope') ||<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                            </span>item.name.toLowerCase().includes('tile') ||</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>item.name.toLowerCase().includes('antenna')</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>);</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>response = `🔭 TELESCOPE EQUIPMENT ANALYSIS\n\nFound ${telescopeItems.length} critical telescope components across SKA network:\n\n`;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>telescopeItems.forEach(item =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>const location = locations.find(loc =&gt; loc.id === item.location);</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>response += `• ${item.name} (${item.partNumber})\n<span class="Apple-converted-space">  </span>Location: ${location?.name} | Qty: ${item.quantity} | Criticality: ${item.criticality}\n`;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>});</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>response += `\n📋 RECOMMENDATION: Schedule maintenance review for high-criticality items before ${telescopeItems.find(i =&gt; i.criticality === 'High')?.nextMaintenance}`;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>} else if (query.includes('power') || query.includes('battery') || query.includes('ups')) {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>const powerItems = inventoryData.filter(item =&gt;<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                            </span>item.category.toLowerCase().includes('power') ||<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                            </span>item.name.toLowerCase().includes('battery') ||</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>item.name.toLowerCase().includes('ups')</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>);</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>response = `⚡ POWER SYSTEMS INVENTORY\n\nPower infrastructure across ${locations.length} locations:\n\n`;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>powerItems.forEach(item =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>const location = locations.find(loc =&gt; loc.id === item.location);</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>response += `• ${item.name} | ${location?.name} | Stock: ${item.quantity} units\n`;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>});</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>response += `\n🔋 Total power units: ${powerItems.reduce((sum, item) =&gt; sum + item.quantity, 0)}\n📧 Contact: power-systems@ska.org for technical support`;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>} else if (query.includes('critical') || query.includes('high priority')) {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>const criticalItems = inventoryData.filter(item =&gt; item.criticality === 'High');</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>response = `🚨 HIGH CRITICALITY ITEMS\n\nMission-critical components requiring priority attention:\n\n`;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>criticalItems.forEach(item =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>const location = locations.find(loc =&gt; loc.id === item.location);</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>response += `• ${item.name} | ${location?.name}\n<span class="Apple-converted-space">  </span>Next Maintenance: ${item.nextMaintenance} | Stock: ${item.quantity}/${item.minQuantity}\n`;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>});</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>response += `\n⚠️<span class="Apple-converted-space">  </span>ACTION REQUIRED: Review maintenance schedules and stock levels for these items`;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>} else if (query.includes('low stock') || query.includes('reorder')) {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>const lowStockItems = inventoryData.filter(item =&gt; item.quantity &lt;= item.minQuantity);</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>response = `📦 LOW STOCK ALERT\n\nItems requiring immediate reorder:\n\n`;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>lowStockItems.forEach(item =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>const location = locations.find(loc =&gt; loc.id === item.location);</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>response += `• ${item.name} | ${location?.name}\n<span class="Apple-converted-space">  </span>Current: ${item.quantity} | Min Required: ${item.minQuantity} | Vendor: ${item.vendor}\n`;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>});</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>response += `\n🛒 Contact procurement@ska.org to initiate purchase orders`;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>response = `🔍 SEARCH RESULTS\n\nSearching SKA inventory for "${searchQuery}"...\n\nFound ${filteredInventory.length} matching items across ${locations.length} facilities.\n\n💡 Try these queries:\n• "Show me critical items"\n• "Power systems status"\n• "Low stock alerts"\n• "Telescope equipment review"`;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>setAiResponse(response);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>} catch (error) {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>setAiResponse('❌ Error processing request. Please try again or contact IT support.');</p>
-<p class="p1"><span class="Apple-converted-space">                </span>} finally {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>setIsLoading(false);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>}</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const exportToSharePoint = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// In real implementation, this would save to SharePoint list</p>
-<p class="p1"><span class="Apple-converted-space">                </span>alert('📊 Export functionality would integrate with SharePoint Lists API');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const generateReport = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Generate printable report</p>
-<p class="p1"><span class="Apple-converted-space">                </span>window.print();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const getLowStockItems = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>return inventoryData.filter(item =&gt; item.quantity &lt;= item.minQuantity);</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const getCriticalItems = () =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>return inventoryData.filter(item =&gt; item.criticality === 'High');</p>
-<p class="p1"><span class="Apple-converted-space">            </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const lowStockItems = getLowStockItems();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const criticalItems = getCriticalItems();</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>return React.createElement('div', { className: "sharepoint-container" },</p>
-<p class="p1"><span class="Apple-converted-space">                </span>// SharePoint-style Header</p>
-<p class="p1"><span class="Apple-converted-space">                </span>React.createElement('div', { className: "mb-6" },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>React.createElement('div', { className: "flex flex-col md:flex-row md:items-center md:justify-between mb-4" },</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>React.createElement('div', null,</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement('h1', { className: "text-3xl font-bold sp-text mb-2" }, 'SKA Telescope Inventory Management'),</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement('p', { className: "sp-text-secondary" }, `Multi-location tracking across 512 stations | Last sync: ${lastSync}`)</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>),</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>React.createElement('div', { className: "flex gap-2 no-print mt-4 md:mt-0" },</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement('button', {</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>onClick: exportToSharePoint,</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>className: "px-4 py-2 sp-primary text-white rounded-md hover:sp-primary-hover flex items-center gap-2"</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>React.createElement(Share2, { className: "w-4 h-4" }),</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>'Export to SP'</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>),</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement('button', {</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>onClick: generateReport,</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>className: "px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 flex items-center gap-2"</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>React.createElement(FileText, { className: "w-4 h-4" }),</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>'Print Report'</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                </span>),</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Enhanced Stats with SharePoint styling</p>
-<p class="p1"><span class="Apple-converted-space">                </span>React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-5 gap-4 mb-6" },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>React.createElement('div', { className: "bg-white rounded-lg shadow p-4 border-l-4 border-blue-500" },</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>React.createElement('div', { className: "flex items-center" },</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement(Package, { className: "w-6 h-6 text-blue-500" }),</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement('div', { className: "ml-3" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>React.createElement('p', { className: "text-sm font-medium text-gray-600" }, 'Total Items'),</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>React.createElement('p', { className: "text-xl font-bold text-gray-900" }, inventoryData.reduce((sum, item) =&gt; sum + item.quantity, 0))</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>),</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>React.createElement('div', { className: "bg-white rounded-lg shadow p-4 border-l-4 border-green-500" },</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>React.createElement('div', { className: "flex items-center" },</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement(MapPin, { className: "w-6 h-6 text-green-500" }),</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement('div', { className: "ml-3" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>React.createElement('p', { className: "text-sm font-medium text-gray-600" }, 'Locations'),</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>React.createElement('p', { className: "text-xl font-bold text-gray-900" }, locations.length)</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>),</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>React.createElement('div', { className: "bg-white rounded-lg shadow p-4 border-l-4 border-red-500" },</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>React.createElement('div', { className: "flex items-center" },</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement(AlertTriangle, { className: "w-6 h-6 text-red-500" }),</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement('div', { className: "ml-3" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>React.createElement('p', { className: "text-sm font-medium text-gray-600" }, 'Low Stock'),</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>React.createElement('p', { className: "text-xl font-bold text-gray-900" }, lowStockItems.length)</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>),</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>React.createElement('div', { className: "bg-white rounded-lg shadow p-4 border-l-4 border-purple-500" },</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>React.createElement('div', { className: "flex items-center" },</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement(Settings, { className: "w-6 h-6 text-purple-500" }),</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement('div', { className: "ml-3" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>React.createElement('p', { className: "text-sm font-medium text-gray-600" }, 'Critical Items'),</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>React.createElement('p', { className: "text-xl font-bold text-gray-900" }, criticalItems.length)</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>),</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>React.createElement('div', { className: "bg-white rounded-lg shadow p-4 border-l-4 border-yellow-500" },</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>React.createElement('div', { className: "flex items-center" },</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement(Truck, { className: "w-6 h-6 text-yellow-500" }),</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement('div', { className: "ml-3" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>React.createElement('p', { className: "text-sm font-medium text-gray-600" }, 'Mobile Assets'),</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>React.createElement('p', { className: "text-xl font-bold text-gray-900" }, locations.filter(loc =&gt; loc.type === 'trailer' || loc.type === 'storage-trailer' || loc.type === 'ute').length)</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                </span>),</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>// AI Search with SharePoint styling</p>
-<p class="p1"><span class="Apple-converted-space">                </span>React.createElement('div', { className: "bg-white rounded-lg shadow mb-6 p-6 no-print" },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>React.createElement('h2', { className: "text-lg font-semibold sp-text mb-4" }, '🤖 AI-Powered Inventory Assistant'),</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>React.createElement('div', { className: "flex gap-4 mb-4 mobile-stack" },</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>React.createElement('div', { className: "flex-1" },</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement('input', {</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>type: "text",</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>placeholder: "Ask about SKA inventory... e.g., 'Show me critical items' or 'Low stock alerts'",</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>value: searchQuery,</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>onChange: (e) =&gt; setSearchQuery(e.target.value),</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>onKeyPress: (e) =&gt; e.key === 'Enter' &amp;&amp; handleAISearch(),</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>className: "w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>})</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>),</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>React.createElement('button', {</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>onClick: handleAISearch,</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>disabled: isLoading,</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>className: "px-6 py-2 sp-primary text-white rounded-md sp-primary-hover disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement(Search, { className: "w-4 h-4" }),</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>isLoading ? 'Analyzing...' : 'Ask AI'</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>),</p>
-<p class="p2"><span class="Apple-converted-space">                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                    </span>aiResponse &amp;&amp; React.createElement('div', { className: "bg-blue-50 border border-blue-200 rounded-md p-4" },</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>React.createElement('h3', { className: "font-semibold text-blue-900 mb-2" }, '🤖 AI Analysis Results:'),</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>React.createElement('pre', { className: "text-blue-800 whitespace-pre-wrap text-sm font-mono" }, aiResponse)</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                </span>),</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Search and Filters</p>
-<p class="p1"><span class="Apple-converted-space">                </span>React.createElement('div', { className: "bg-white rounded-lg shadow mb-6 p-6 no-print" },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>React.createElement('div', { className: "flex flex-col md:flex-row gap-4" },</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>React.createElement('div', { className: "flex-1" },</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement('label', { className: "block text-sm font-medium sp-text mb-2" }, 'Search Inventory'),</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement('input', {</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>type: "text",</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>placeholder: "Search by name, part number, category, or location...",</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>value: searchQuery,</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>onChange: (e) =&gt; setSearchQuery(e.target.value),</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>className: "w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>})</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>),</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>React.createElement('div', { className: "md:w-64" },</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement('label', { className: "block text-sm font-medium sp-text mb-2" }, 'Filter by Location'),</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement('select', {</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>value: selectedLocation,</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>onChange: (e) =&gt; setSelectedLocation(e.target.value),</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>className: "w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>React.createElement('option', { value: "all" }, 'All Locations'),</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>locations.map(location =&gt;<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                                    </span>React.createElement('option', { key: location.id, value: location.id }, location.name)</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                </span>),</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Enhanced Inventory Table</p>
-<p class="p1"><span class="Apple-converted-space">                </span>React.createElement('div', { className: "bg-white rounded-lg shadow overflow-hidden" },</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>React.createElement('div', { className: "px-6 py-4 border-b border-gray-200 sp-secondary" },</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>React.createElement('h2', { className: "text-lg font-semibold sp-text" }, 'Inventory Database'),</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>React.createElement('p', { className: "sp-text-secondary text-sm" }, `Showing ${filteredInventory.length} of ${inventoryData.length} items`)</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>),</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>React.createElement('div', { className: "overflow-x-auto" },</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>React.createElement('table', { className: "min-w-full divide-y divide-gray-200" },</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement('thead', { className: "sp-secondary" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>React.createElement('tr', null,</p>
-<p class="p1"><span class="Apple-converted-space">                                    </span>React.createElement('th', { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, 'Item Details'),</p>
-<p class="p1"><span class="Apple-converted-space">                                    </span>React.createElement('th', { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, 'Location &amp; Contact'),</p>
-<p class="p1"><span class="Apple-converted-space">                                    </span>React.createElement('th', { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, 'Inventory'),</p>
-<p class="p1"><span class="Apple-converted-space">                                    </span>React.createElement('th', { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, 'Status'),</p>
-<p class="p1"><span class="Apple-converted-space">                                    </span>React.createElement('th', { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, 'Maintenance'),</p>
-<p class="p1"><span class="Apple-converted-space">                                    </span>React.createElement('th', { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, 'Vendor')</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>),</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>React.createElement('tbody', { className: "bg-white divide-y divide-gray-200" },</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>filteredInventory.map((item) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                                    </span>const location = locations.find(loc =&gt; loc.id === item.location);</p>
-<p class="p1"><span class="Apple-converted-space">                                    </span>const isLowStock = item.quantity &lt;= item.minQuantity;</p>
-<p class="p2"><span class="Apple-converted-space">                                    </span></p>
-<p class="p1"><span class="Apple-converted-space">                                    </span>return React.createElement('tr', { key: item.id, className: "hover:bg-gray-50" },</p>
-<p class="p1"><span class="Apple-converted-space">                                        </span>React.createElement('td', { className: "px-6 py-4" },</p>
-<p class="p1"><span class="Apple-converted-space">                                            </span>React.createElement('div', null,</p>
-<p class="p1"><span class="Apple-converted-space">                                                </span>React.createElement('div', { className: "text-sm font-medium sp-text" }, item.name),</p>
-<p class="p1"><span class="Apple-converted-space">                                                </span>React.createElement('div', { className: "text-sm sp-text-secondary" }, item.partNumber),</p>
-<p class="p1"><span class="Apple-converted-space">                                                </span>React.createElement('div', { className: "text-xs text-gray-400" }, item.category)</p>
-<p class="p1"><span class="Apple-converted-space">                                            </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                                        </span>),</p>
-<p class="p1"><span class="Apple-converted-space">                                        </span>React.createElement('td', { className: "px-6 py-4" },</p>
-<p class="p1"><span class="Apple-converted-space">                                            </span>React.createElement('div', { className: "flex items-center mb-2" },</p>
-<p class="p1"><span class="Apple-converted-space">                                                </span>getLocationIcon(location?.type),</p>
-<p class="p1"><span class="Apple-converted-space">                                                </span>React.createElement('div', { className: "ml-2" },</p>
-<p class="p1"><span class="Apple-converted-space">                                                    </span>React.createElement('div', { className: "text-sm font-medium sp-text" }, location?.name),</p>
-<p class="p1"><span class="Apple-converted-space">                                                    </span>React.createElement('div', { className: "text-xs sp-text-secondary" }, location?.address)</p>
-<p class="p1"><span class="Apple-converted-space">                                                </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                                            </span>),</p>
-<p class="p1"><span class="Apple-converted-space">                                            </span>React.createElement('span', { className: `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getLocationTypeColor(location?.type)}` },</p>
-<p class="p1"><span class="Apple-converted-space">                                                </span>location?.type.replace('-', ' ')</p>
-<p class="p1"><span class="Apple-converted-space">                                            </span>),</p>
-<p class="p1"><span class="Apple-converted-space">                                            </span>location?.contact &amp;&amp; React.createElement('div', { className: "text-xs text-blue-600 mt-1" }, location.contact)</p>
-<p class="p1"><span class="Apple-converted-space">                                        </span>),</p>
-<p class="p1"><span class="Apple-converted-space">                                        </span>React.createElement('td', { className: "px-6 py-4" },</p>
-<p class="p1"><span class="Apple-converted-space">                                            </span>React.createElement('div', { className: "text-sm sp-text" }, `${item.quantity} units`),</p>
-<p class="p1"><span class="Apple-converted-space">                                            </span>React.createElement('div', { className: "text-xs sp-text-secondary" }, `Min: ${item.minQuantity}`)</p>
-<p class="p1"><span class="Apple-converted-space">                                        </span>),</p>
-<p class="p1"><span class="Apple-converted-space">                                        </span>React.createElement('td', { className: "px-6 py-4" },</p>
-<p class="p1"><span class="Apple-converted-space">                                            </span>React.createElement('div', { className: "space-y-1" },</p>
-<p class="p1"><span class="Apple-converted-space">                                                </span>isLowStock ?<span class="Apple-converted-space"> </span></p>
-<p class="p1"><span class="Apple-converted-space">                                                </span>React.createElement('span', { className: "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800" },</p>
-<p class="p1"><span class="Apple-converted-space">                                                    </span>React.createElement(AlertTriangle, { className: "w-3 h-3 mr-1" }),</p>
-<p class="p1"><span class="Apple-converted-space">                                                    </span>'Low Stock'</p>
-<p class="p1"><span class="Apple-converted-space">                                                </span>) :</p>
-<p class="p1"><span class="Apple-converted-space">                                                </span>React.createElement('span', { className: "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800" },</p>
-<p class="p1"><span class="Apple-converted-space">                                                    </span>'In Stock'</p>
-<p class="p1"><span class="Apple-converted-space">                                                </span>),</p>
-<p class="p1"><span class="Apple-converted-space">                                                </span>React.createElement('div', null,</p>
-<p class="p1"><span class="Apple-converted-space">                                                    </span>React.createElement('span', { className: `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getCriticalityColor(item.criticality)}` },</p>
-<p class="p1"><span class="Apple-converted-space">                                                        </span>item.criticality</p>
-<p class="p1"><span class="Apple-converted-space">                                                    </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                                                </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                                            </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                                        </span>),</p>
-<p class="p1"><span class="Apple-converted-space">                                        </span>React.createElement('td', { className: "px-6 py-4" },</p>
-<p class="p1"><span class="Apple-converted-space">                                            </span>React.createElement('div', { className: "text-sm sp-text" }, item.nextMaintenance),</p>
-<p class="p1"><span class="Apple-converted-space">                                            </span>React.createElement('div', { className: "text-xs sp-text-secondary" }, `Updated: ${item.lastUpdated}`)</p>
-<p class="p1"><span class="Apple-converted-space">                                        </span>),</p>
-<p class="p1"><span class="Apple-converted-space">                                        </span>React.createElement('td', { className: "px-6 py-4 text-sm sp-text" }, item.vendor)</p>
-<p class="p1"><span class="Apple-converted-space">                                    </span>);</p>
-<p class="p1"><span class="Apple-converted-space">                                </span>})</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>)</p>
-<p class="p1"><span class="Apple-converted-space">                </span>)</p>
-<p class="p1"><span class="Apple-converted-space">            </span>);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>};</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>ReactDOM.render(React.createElement(SharePointInventorySystem), document.getElementById('root'));</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+<p class="p1"><span class="s1">&lt;!DOCTYPE html&gt;</span></p>
+<p class="p1"><span class="s1">&lt;html lang="en"&gt;</span></p>
+<p class="p1"><span class="s1">&lt;head&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;title&gt;SKA Telescope Inventory Management - SharePoint Integration&lt;/title&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"&gt;&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"&gt;&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.22.5/babel.min.js"&gt;&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.js"&gt;&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;style&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>body {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin: 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>background: #f8f9fa;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* SharePoint-compatible styling */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.sharepoint-container {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>max-width: 100%;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>margin: 0;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>padding: 20px;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* Print styles */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>@media print {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>.no-print { display: none !important; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>body { background: white !important; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* Mobile optimizations */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>@media (max-width: 768px) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>.sharepoint-container { padding: 10px; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>.mobile-stack { flex-direction: column !important; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">        </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* SharePoint theme colors */</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.sp-primary { background-color: #0078d4; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.sp-primary-hover:hover { background-color: #106ebe; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.sp-secondary { background-color: #f3f2f1; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.sp-text { color: #323130; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>.sp-text-secondary { color: #605e5c; }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/head&gt;</span></p>
+<p class="p1"><span class="s1">&lt;body&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div id="root"&gt;&lt;/div&gt;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script type="text/babel"&gt;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const { useState, useEffect } = React;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const { Search, MapPin, Package, AlertTriangle, Truck, Wrench, Building2, Home, Car, Download, Share2, FileText, Settings } = lucide;</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>const SharePointInventorySystem = () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const [searchQuery, setSearchQuery] = useState('');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const [selectedLocation, setSelectedLocation] = useState('all');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const [inventoryData, setInventoryData] = useState([]);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const [locations, setLocations] = useState([]);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const [aiResponse, setAiResponse] = useState('');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const [isLoading, setIsLoading] = useState(false);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const [currentUser, setCurrentUser] = useState('');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const [lastSync, setLastSync] = useState('');</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>// Initialize data and SharePoint context</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>useEffect(() =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Set current user (in real SharePoint, this would come from _spPageContextInfo)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>setCurrentUser('Current User');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>setLastSync(new Date().toLocaleString());</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const sampleLocations = [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Central Processing Facilities</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 'cpf-core', name: 'CPF Core Facility', type: 'cpf', address: 'Central Processing Facility - Core Area', capacity: 15000, contact: 'facility-manager@ska.org' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 'cpf-warehouse', name: 'CPF Main Warehouse', type: 'central', address: 'Main Distribution Hub - Murchison', capacity: 10000, contact: 'warehouse@ska.org' },</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Remote Processing Facilities - Southern Arm</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 'rpf-s8', name: 'RPF S8 Station', type: 'rpf', address: 'Southern Arm - FS345-350 Cluster', capacity: 800, contact: 'south-ops@ska.org' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 'rpf-s9', name: 'RPF S9 Station', type: 'rpf', address: 'Southern Arm - FS352-355 Cluster', capacity: 600, contact: 'south-ops@ska.org' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 'rpf-s10', name: 'RPF S10 Station', type: 'rpf', address: 'Southern Arm - FS429-434 Cluster', capacity: 800, contact: 'south-ops@ska.org' },</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Remote Processing Facilities - Northern Arm</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 'rpf-n8', name: 'RPF N8 Station', type: 'rpf', address: 'Northern Arm - FS375-378 Cluster', capacity: 600, contact: 'north-ops@ska.org' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 'rpf-n13', name: 'RPF N13 Station', type: 'rpf', address: 'Northern Arm - FS489-492 Cluster', capacity: 600, contact: 'north-ops@ska.org' },</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Remote Processing Facilities - Eastern Arm</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 'rpf-e8', name: 'RPF E8 Station', type: 'rpf', address: 'Eastern Arm - FS315-318 Cluster', capacity: 600, contact: 'east-ops@ska.org' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 'rpf-e13', name: 'RPF E13 Station', type: 'rpf', address: 'Eastern Arm - FS405-408 Cluster', capacity: 600, contact: 'east-ops@ska.org' },</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Field Station Clusters</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 'fs-core-01', name: 'Core Field Stations 1-50', type: 'field-cluster', address: 'Core Area - Station Block Alpha', capacity: 500, contact: 'core-maint@ska.org' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 'fs-core-02', name: 'Core Field Stations 51-100', type: 'field-cluster', address: 'Core Area - Station Block Beta', capacity: 500, contact: 'core-maint@ska.org' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 'fs-core-03', name: 'Core Field Stations 101-150', type: 'field-cluster', address: 'Core Area - Station Block Gamma', capacity: 500, contact: 'core-maint@ska.org' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 'fs-core-04', name: 'Core Field Stations 151-199', type: 'field-cluster', address: 'Core Area - Station Block Delta', capacity: 400, contact: 'core-maint@ska.org' },</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Mobile Assets</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 'trailer-maint-01', name: 'Maintenance Trailer #1', type: 'trailer', address: 'Mobile - Currently at RPF S8', capacity: 200, contact: 'mobile-team@ska.org' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 'trailer-spare-02', name: 'Spare Parts Trailer #2', type: 'storage-trailer', address: 'Mobile - En route to Northern Arm', capacity: 300, contact: 'mobile-team@ska.org' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 'ute-tech-01', name: 'Field Tech Ute - Alex', type: 'ute', address: 'Mobile - Eastern Arm maintenance', capacity: 50, contact: 'alex.tech@ska.org' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 'ute-tech-02', name: 'Field Tech Ute - Jordan', type: 'ute', address: 'Mobile - Core area patrol', capacity: 50, contact: 'jordan.tech@ska.org' },</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// In-town facility</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 'in-town', name: 'Geraldton Supply Depot', type: 'in-town', address: 'Urban Distribution Center - Geraldton', capacity: 1500, contact: 'geraldton@ska.org' }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>];</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const sampleInventory = [</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Telescope-specific equipment</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 1, name: 'Low Frequency Aperture Array Tile', partNumber: 'LFAA-TILE-256', location: 'cpf-core', quantity: 25, minQuantity: 10, category: 'Telescope Hardware', vendor: 'LFAA Systems', lastUpdated: '2025-06-25', criticality: 'High', nextMaintenance: '2025-07-15' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 2, name: 'Signal Processing Unit', partNumber: 'SPU-MARK4-001', location: 'cpf-warehouse', quantity: 15, minQuantity: 5, category: 'Electronics', vendor: 'Digital Systems Corp', lastUpdated: '2025-06-24', criticality: 'High', nextMaintenance: '2025-08-01' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 3, name: 'Optical Fiber Cable 12-core', partNumber: 'OFC-12C-SM-1KM', location: 'rpf-s8', quantity: 50, minQuantity: 20, category: 'Cables', vendor: 'Fiber Optics Ltd', lastUpdated: '2025-06-26', criticality: 'Medium', nextMaintenance: '2025-12-01' },</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Power systems</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 4, name: 'Power Distribution Unit 48V', partNumber: 'PDU-48V-20A', location: 'rpf-n8', quantity: 8, minQuantity: 3, category: 'Power', vendor: 'Power Systems Inc', lastUpdated: '2025-06-25', criticality: 'High', nextMaintenance: '2025-07-30' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 5, name: 'UPS Battery Module', partNumber: 'UPS-BAT-12V-100AH', location: 'cpf-warehouse', quantity: 30, minQuantity: 15, category: 'Power', vendor: 'Battery Solutions', lastUpdated: '2025-06-23', criticality: 'High', nextMaintenance: '2025-09-01' },</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Field maintenance equipment</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 6, name: 'Spectrum Analyzer Portable', partNumber: 'SA-PORT-9KHZ-3GHZ', location: 'ute-tech-01', quantity: 1, minQuantity: 1, category: 'Test Equipment', vendor: 'Test Instruments Co', lastUpdated: '2025-06-26', criticality: 'Medium', nextMaintenance: '2025-08-15' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 7, name: 'Antenna Alignment Tool', partNumber: 'AAT-PRECISION-001', location: 'trailer-maint-01', quantity: 4, minQuantity: 2, category: 'Tools', vendor: 'Precision Tools Ltd', lastUpdated: '2025-06-25', criticality: 'Medium', nextMaintenance: '2025-10-01' },</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Environmental protection</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 8, name: 'Environmental Enclosure IP65', partNumber: 'ENV-ENC-IP65-600x400', location: 'fs-core-01', quantity: 12, minQuantity: 8, category: 'Enclosures', vendor: 'Weather Protection Co', lastUpdated: '2025-06-26', criticality: 'Medium', nextMaintenance: '2026-01-01' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 9, name: 'Cooling Fan 48V DC', partNumber: 'FAN-48V-120MM', location: 'rpf-e8', quantity: 20, minQuantity: 10, category: 'Cooling', vendor: 'Thermal Solutions', lastUpdated: '2025-06-25', criticality: 'Low', nextMaintenance: '2025-11-01' },</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Network equipment</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 10, name: 'Ethernet Switch 48-port Managed', partNumber: 'ETH-SW-48P-GIG', location: 'rpf-s10', quantity: 6, minQuantity: 2, category: 'Network', vendor: 'Network Systems Ltd', lastUpdated: '2025-06-24', criticality: 'High', nextMaintenance: '2025-08-30' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 11, name: 'GPS Timing Module', partNumber: 'GPS-TIM-PPS-001', location: 'cpf-core', quantity: 8, minQuantity: 3, category: 'Timing', vendor: 'Precision Timing Inc', lastUpdated: '2025-06-25', criticality: 'High', nextMaintenance: '2025-07-20' },</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>// Standard maintenance items</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 12, name: 'Coaxial Cable Assembly RG-213', partNumber: 'COAX-RG213-10M-NTYPE', location: 'in-town', quantity: 45, minQuantity: 20, category: 'Cables', vendor: 'Cable Assemblies Co', lastUpdated: '2025-06-26', criticality: 'Low', nextMaintenance: '2026-06-01' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 13, name: 'Digital Multimeter Handheld', partNumber: 'DMM-HAND-TRMS-001', location: 'ute-tech-02', quantity: 2, minQuantity: 1, category: 'Test Equipment', vendor: 'Measurement Tools Inc', lastUpdated: '2025-06-25', criticality: 'Medium', nextMaintenance: '2025-12-15' },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>{ id: 14, name: 'Surge Protection Device', partNumber: 'SPD-AC-275V-40KA', location: 'trailer-spare-02', quantity: 15, minQuantity: 8, category: 'Protection', vendor: 'Protection Systems Ltd', lastUpdated: '2025-06-24', criticality: 'Medium', nextMaintenance: '2025-09-15' }</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>];</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>setLocations(sampleLocations);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>setInventoryData(sampleInventory);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}, []);</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const getLocationIcon = (type) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>switch (type) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>case 'cpf': return React.createElement(Building2, { className: "w-4 h-4" });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>case 'central': return React.createElement(Building2, { className: "w-4 h-4" });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>case 'rpf': return React.createElement(Wrench, { className: "w-4 h-4" });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>case 'field-cluster': return React.createElement(Package, { className: "w-4 h-4" });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>case 'in-town': return React.createElement(Home, { className: "w-4 h-4" });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>case 'trailer': case 'storage-trailer': return React.createElement(Truck, { className: "w-4 h-4" });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>case 'ute': return React.createElement(Car, { className: "w-4 h-4" });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>default: return React.createElement(MapPin, { className: "w-4 h-4" });</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const getLocationTypeColor = (type) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>switch (type) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>case 'cpf': return 'bg-blue-100 text-blue-800';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>case 'central': return 'bg-blue-100 text-blue-800';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>case 'rpf': return 'bg-green-100 text-green-800';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>case 'field-cluster': return 'bg-purple-100 text-purple-800';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>case 'in-town': return 'bg-orange-100 text-orange-800';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>case 'trailer': case 'storage-trailer': return 'bg-yellow-100 text-yellow-800';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>case 'ute': return 'bg-red-100 text-red-800';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>default: return 'bg-gray-100 text-gray-800';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const getCriticalityColor = (criticality) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>switch (criticality) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>case 'High': return 'bg-red-100 text-red-800';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>case 'Medium': return 'bg-yellow-100 text-yellow-800';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>case 'Low': return 'bg-green-100 text-green-800';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>default: return 'bg-gray-100 text-gray-800';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const filteredInventory = inventoryData.filter(item =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                     </span>item.partNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                     </span>item.category.toLowerCase().includes(searchQuery.toLowerCase());</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>const matchesLocation = selectedLocation === 'all' || item.location === selectedLocation;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>return matchesSearch &amp;&amp; matchesLocation;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>});</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const handleAISearch = async () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>if (!searchQuery.trim()) return;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>setIsLoading(true);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>setAiResponse('');</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>try {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>await new Promise(resolve =&gt; setTimeout(resolve, 1500));</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>let response = '';</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>const query = searchQuery.toLowerCase();</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>if (query.includes('telescope') || query.includes('lfaa') || query.includes('antenna')) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>const telescopeItems = inventoryData.filter(item =&gt;<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>item.category.toLowerCase().includes('telescope') ||<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>item.name.toLowerCase().includes('tile') ||</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>item.name.toLowerCase().includes('antenna')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>response = `</span><span class="s2">🔭</span><span class="s1"> TELESCOPE EQUIPMENT ANALYSIS\n\nFound ${telescopeItems.length} critical telescope components across SKA network:\n\n`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>telescopeItems.forEach(item =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>const location = locations.find(loc =&gt; loc.id === item.location);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>response += `• ${item.name} (${item.partNumber})\n<span class="Apple-converted-space">  </span>Location: ${location?.name} | Qty: ${item.quantity} | Criticality: ${item.criticality}\n`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>response += `\n</span><span class="s2">📋</span><span class="s1"> RECOMMENDATION: Schedule maintenance review for high-criticality items before ${telescopeItems.find(i =&gt; i.criticality === 'High')?.nextMaintenance}`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>} else if (query.includes('power') || query.includes('battery') || query.includes('ups')) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>const powerItems = inventoryData.filter(item =&gt;<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>item.category.toLowerCase().includes('power') ||<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>item.name.toLowerCase().includes('battery') ||</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>item.name.toLowerCase().includes('ups')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>response = `</span><span class="s2">⚡</span><span class="s1"> POWER SYSTEMS INVENTORY\n\nPower infrastructure across ${locations.length} locations:\n\n`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>powerItems.forEach(item =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>const location = locations.find(loc =&gt; loc.id === item.location);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>response += `• ${item.name} | ${location?.name} | Stock: ${item.quantity} units\n`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>response += `\n</span><span class="s2">🔋</span><span class="s1"> Total power units: ${powerItems.reduce((sum, item) =&gt; sum + item.quantity, 0)}\n</span><span class="s2">📧</span><span class="s1"> Contact: power-systems@ska.org for technical support`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>} else if (query.includes('critical') || query.includes('high priority')) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>const criticalItems = inventoryData.filter(item =&gt; item.criticality === 'High');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>response = `</span><span class="s2">🚨</span><span class="s1"> HIGH CRITICALITY ITEMS\n\nMission-critical components requiring priority attention:\n\n`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>criticalItems.forEach(item =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>const location = locations.find(loc =&gt; loc.id === item.location);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>response += `• ${item.name} | ${location?.name}\n<span class="Apple-converted-space">  </span>Next Maintenance: ${item.nextMaintenance} | Stock: ${item.quantity}/${item.minQuantity}\n`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>response += `\n</span><span class="s2">⚠️</span><span class="s1"><span class="Apple-converted-space">  </span>ACTION REQUIRED: Review maintenance schedules and stock levels for these items`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>} else if (query.includes('low stock') || query.includes('reorder')) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>const lowStockItems = inventoryData.filter(item =&gt; item.quantity &lt;= item.minQuantity);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>response = `</span><span class="s2">📦</span><span class="s1"> LOW STOCK ALERT\n\nItems requiring immediate reorder:\n\n`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>lowStockItems.forEach(item =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>const location = locations.find(loc =&gt; loc.id === item.location);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>response += `• ${item.name} | ${location?.name}\n<span class="Apple-converted-space">  </span>Current: ${item.quantity} | Min Required: ${item.minQuantity} | Vendor: ${item.vendor}\n`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>});</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>response += `\n</span><span class="s2">🛒</span><span class="s1"> Contact procurement@ska.org to initiate purchase orders`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>} else {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>response = `</span><span class="s2">🔍</span><span class="s1"> SEARCH RESULTS\n\nSearching SKA inventory for "${searchQuery}"...\n\nFound ${filteredInventory.length} matching items across ${locations.length} facilities.\n\n</span><span class="s2">💡</span><span class="s1"> Try these queries:\n• "Show me critical items"\n• "Power systems status"\n• "Low stock alerts"\n• "Telescope equipment review"`;</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>}</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>setAiResponse(response);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>} catch (error) {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>setAiResponse('</span><span class="s2">❌</span><span class="s1"> Error processing request. Please try again or contact IT support.');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>} finally {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>setIsLoading(false);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>}</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const exportToSharePoint = () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// In real implementation, this would save to SharePoint list</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>alert('</span><span class="s2">📊</span><span class="s1"> Export functionality would integrate with SharePoint Lists API');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const generateReport = () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Generate printable report</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>window.print();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const getLowStockItems = () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>return inventoryData.filter(item =&gt; item.quantity &lt;= item.minQuantity);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const getCriticalItems = () =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>return inventoryData.filter(item =&gt; item.criticality === 'High');</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const lowStockItems = getLowStockItems();</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>const criticalItems = getCriticalItems();</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>return React.createElement('div', { className: "sharepoint-container" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// SharePoint-style Header</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>React.createElement('div', { className: "mb-6" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>React.createElement('div', { className: "flex flex-col md:flex-row md:items-center md:justify-between mb-4" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('div', null,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement('h1', { className: "text-3xl font-bold sp-text mb-2" }, 'SKA Telescope Inventory Management'),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement('p', { className: "sp-text-secondary" }, `Multi-location tracking across 512 stations | Last sync: ${lastSync}`)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('div', { className: "flex gap-2 no-print mt-4 md:mt-0" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement('button', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>onClick: exportToSharePoint,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>className: "px-4 py-2 sp-primary text-white rounded-md hover:sp-primary-hover flex items-center gap-2"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>},</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>React.createElement(Share2, { className: "w-4 h-4" }),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>'Export to SP'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement('button', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>onClick: generateReport,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>className: "px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 flex items-center gap-2"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>},</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>React.createElement(FileText, { className: "w-4 h-4" }),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>'Print Report'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>),</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Enhanced Stats with SharePoint styling</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-5 gap-4 mb-6" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>React.createElement('div', { className: "bg-white rounded-lg shadow p-4 border-l-4 border-blue-500" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('div', { className: "flex items-center" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement(Package, { className: "w-6 h-6 text-blue-500" }),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement('div', { className: "ml-3" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>React.createElement('p', { className: "text-sm font-medium text-gray-600" }, 'Total Items'),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>React.createElement('p', { className: "text-xl font-bold text-gray-900" }, inventoryData.reduce((sum, item) =&gt; sum + item.quantity, 0))</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>React.createElement('div', { className: "bg-white rounded-lg shadow p-4 border-l-4 border-green-500" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('div', { className: "flex items-center" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement(MapPin, { className: "w-6 h-6 text-green-500" }),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement('div', { className: "ml-3" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>React.createElement('p', { className: "text-sm font-medium text-gray-600" }, 'Locations'),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>React.createElement('p', { className: "text-xl font-bold text-gray-900" }, locations.length)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>React.createElement('div', { className: "bg-white rounded-lg shadow p-4 border-l-4 border-red-500" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('div', { className: "flex items-center" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement(AlertTriangle, { className: "w-6 h-6 text-red-500" }),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement('div', { className: "ml-3" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>React.createElement('p', { className: "text-sm font-medium text-gray-600" }, 'Low Stock'),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>React.createElement('p', { className: "text-xl font-bold text-gray-900" }, lowStockItems.length)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>React.createElement('div', { className: "bg-white rounded-lg shadow p-4 border-l-4 border-purple-500" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('div', { className: "flex items-center" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement(Settings, { className: "w-6 h-6 text-purple-500" }),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement('div', { className: "ml-3" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>React.createElement('p', { className: "text-sm font-medium text-gray-600" }, 'Critical Items'),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>React.createElement('p', { className: "text-xl font-bold text-gray-900" }, criticalItems.length)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>React.createElement('div', { className: "bg-white rounded-lg shadow p-4 border-l-4 border-yellow-500" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('div', { className: "flex items-center" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement(Truck, { className: "w-6 h-6 text-yellow-500" }),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement('div', { className: "ml-3" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>React.createElement('p', { className: "text-sm font-medium text-gray-600" }, 'Mobile Assets'),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>React.createElement('p', { className: "text-xl font-bold text-gray-900" }, locations.filter(loc =&gt; loc.type === 'trailer' || loc.type === 'storage-trailer' || loc.type === 'ute').length)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>),</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// AI Search with SharePoint styling</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>React.createElement('div', { className: "bg-white rounded-lg shadow mb-6 p-6 no-print" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>React.createElement('h2', { className: "text-lg font-semibold sp-text mb-4" }, '</span><span class="s2">🤖</span><span class="s1"> AI-Powered Inventory Assistant'),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>React.createElement('div', { className: "flex gap-4 mb-4 mobile-stack" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('div', { className: "flex-1" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement('input', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>type: "text",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>placeholder: "Ask about SKA inventory... e.g., 'Show me critical items' or 'Low stock alerts'",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>value: searchQuery,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>onChange: (e) =&gt; setSearchQuery(e.target.value),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>onKeyPress: (e) =&gt; e.key === 'Enter' &amp;&amp; handleAISearch(),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>className: "w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>})</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('button', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>onClick: handleAISearch,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>disabled: isLoading,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>className: "px-6 py-2 sp-primary text-white rounded-md sp-primary-hover disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>},</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement(Search, { className: "w-4 h-4" }),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>isLoading ? 'Analyzing...' : 'Ask AI'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>),</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>aiResponse &amp;&amp; React.createElement('div', { className: "bg-blue-50 border border-blue-200 rounded-md p-4" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('h3', { className: "font-semibold text-blue-900 mb-2" }, '</span><span class="s2">🤖</span><span class="s1"> AI Analysis Results:'),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('pre', { className: "text-blue-800 whitespace-pre-wrap text-sm font-mono" }, aiResponse)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>),</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Search and Filters</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>React.createElement('div', { className: "bg-white rounded-lg shadow mb-6 p-6 no-print" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>React.createElement('div', { className: "flex flex-col md:flex-row gap-4" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('div', { className: "flex-1" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement('label', { className: "block text-sm font-medium sp-text mb-2" }, 'Search Inventory'),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement('input', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>type: "text",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>placeholder: "Search by name, part number, category, or location...",</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>value: searchQuery,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>onChange: (e) =&gt; setSearchQuery(e.target.value),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>className: "w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>})</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('div', { className: "md:w-64" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement('label', { className: "block text-sm font-medium sp-text mb-2" }, 'Filter by Location'),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement('select', {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>value: selectedLocation,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>onChange: (e) =&gt; setSelectedLocation(e.target.value),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>className: "w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>},</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>React.createElement('option', { value: "all" }, 'All Locations'),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>locations.map(location =&gt;<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>React.createElement('option', { key: location.id, value: location.id }, location.name)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>),</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>// Enhanced Inventory Table</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>React.createElement('div', { className: "bg-white rounded-lg shadow overflow-hidden" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>React.createElement('div', { className: "px-6 py-4 border-b border-gray-200 sp-secondary" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('h2', { className: "text-lg font-semibold sp-text" }, 'Inventory Database'),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('p', { className: "sp-text-secondary text-sm" }, `Showing ${filteredInventory.length} of ${inventoryData.length} items`)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>React.createElement('div', { className: "overflow-x-auto" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>React.createElement('table', { className: "min-w-full divide-y divide-gray-200" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement('thead', { className: "sp-secondary" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>React.createElement('tr', null,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>React.createElement('th', { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, 'Item Details'),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>React.createElement('th', { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, 'Location &amp; Contact'),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>React.createElement('th', { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, 'Inventory'),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>React.createElement('th', { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, 'Status'),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>React.createElement('th', { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, 'Maintenance'),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>React.createElement('th', { className: "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" }, 'Vendor')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>React.createElement('tbody', { className: "bg-white divide-y divide-gray-200" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>filteredInventory.map((item) =&gt; {</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>const location = locations.find(loc =&gt; loc.id === item.location);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>const isLowStock = item.quantity &lt;= item.minQuantity;</span></p>
+<p class="p2"><span class="s1"><span class="Apple-converted-space">                                    </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>return React.createElement('tr', { key: item.id, className: "hover:bg-gray-50" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>React.createElement('td', { className: "px-6 py-4" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                            </span>React.createElement('div', null,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                </span>React.createElement('div', { className: "text-sm font-medium sp-text" }, item.name),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                </span>React.createElement('div', { className: "text-sm sp-text-secondary" }, item.partNumber),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                </span>React.createElement('div', { className: "text-xs text-gray-400" }, item.category)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                            </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>React.createElement('td', { className: "px-6 py-4" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                            </span>React.createElement('div', { className: "flex items-center mb-2" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                </span>getLocationIcon(location?.type),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                </span>React.createElement('div', { className: "ml-2" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                    </span>React.createElement('div', { className: "text-sm font-medium sp-text" }, location?.name),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                    </span>React.createElement('div', { className: "text-xs sp-text-secondary" }, location?.address)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                            </span>),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                            </span>React.createElement('span', { className: `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getLocationTypeColor(location?.type)}` },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                </span>location?.type.replace('-', ' ')</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                            </span>),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                            </span>location?.contact &amp;&amp; React.createElement('div', { className: "text-xs text-blue-600 mt-1" }, location.contact)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>React.createElement('td', { className: "px-6 py-4" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                            </span>React.createElement('div', { className: "text-sm sp-text" }, `${item.quantity} units`),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                            </span>React.createElement('div', { className: "text-xs sp-text-secondary" }, `Min: ${item.minQuantity}`)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>React.createElement('td', { className: "px-6 py-4" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                            </span>React.createElement('div', { className: "space-y-1" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                </span>isLowStock ?<span class="Apple-converted-space"> </span></span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                </span>React.createElement('span', { className: "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                    </span>React.createElement(AlertTriangle, { className: "w-3 h-3 mr-1" }),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                    </span>'Low Stock'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                </span>) :</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                </span>React.createElement('span', { className: "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                    </span>'In Stock'</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                </span>),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                </span>React.createElement('div', null,</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                    </span>React.createElement('span', { className: `inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getCriticalityColor(item.criticality)}` },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                        </span>item.criticality</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                    </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                                </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                            </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>React.createElement('td', { className: "px-6 py-4" },</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                            </span>React.createElement('div', { className: "text-sm sp-text" }, item.nextMaintenance),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                            </span>React.createElement('div', { className: "text-xs sp-text-secondary" }, `Updated: ${item.lastUpdated}`)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>),</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                        </span>React.createElement('td', { className: "px-6 py-4 text-sm sp-text" }, item.vendor)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                    </span>);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                                </span>})</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                            </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                        </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                    </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>)</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>);</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>};</span></p>
+<p class="p2"><span class="s1"></span><br></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>ReactDOM.render(React.createElement(SharePointInventorySystem), document.getElementById('root'));</span></p>
+<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/body&gt;</span></p>
+<p class="p1"><span class="s1">&lt;/html&gt;</span></p>
 </body>
 </html>
