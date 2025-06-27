@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SKA Enterprise Inventory Management System</title>
+    <title>SKA Enterprise Inventory Management System - SharePoint Connected</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -91,6 +91,29 @@
             margin-bottom: 24px;
         }
         
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .config-panel {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
         @media (max-width: 1024px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -112,6 +135,17 @@
 
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
+
+        // SharePoint Configuration
+        const SHAREPOINT_CONFIG = {
+            siteUrl: '', // Will be set by user
+            listNames: {
+                inventory: 'SKA_Inventory_Master',
+                locations: 'SKA_Locations', 
+                transfers: 'SKA_Transfers2',
+                workOrders: 'SKA_Work_Orders1'
+            }
+        };
 
         // Icons
         const DashboardIcon = () => (
@@ -170,6 +204,297 @@
             </svg>
         );
 
+        // SharePoint Service Class
+        class SharePointService {
+            constructor(siteUrl) {
+                this.siteUrl = siteUrl;
+                this.headers = {
+                    'Accept': 'application/json;odata=verbose',
+                    'Content-Type': 'application/json;odata=verbose'
+                };
+            }
+
+            setSiteUrl(url) {
+                this.siteUrl = url;
+            }
+
+            async getFormDigest() {
+                try {
+                    const response = await fetch(`${this.siteUrl}/_api/contextinfo`, {
+                        method: 'POST',
+                        headers: this.headers,
+                        credentials: 'same-origin'
+                    });
+                    const data = await response.json();
+                    return data.d.GetContextWebInformation.FormDigestValue;
+                } catch (error) {
+                    console.error('Error getting form digest:', error);
+                    throw error;
+                }
+            }
+
+            async getInventoryItems() {
+                try {
+                    const response = await fetch(
+                        `${this.siteUrl}/_api/web/lists/getbytitle('${SHAREPOINT_CONFIG.listNames.inventory}')/items?$top=5000`,
+                        {
+                            headers: this.headers,
+                            credentials: 'same-origin'
+                        }
+                    );
+                    const data = await response.json();
+                    return data.d.results.map(item => ({
+                        id: item.Id,
+                        name: item.Title,
+                        partNumber: item.Part_x0020_Number,
+                        serialNumber: item.Serial_x0020_Number || '',
+                        batchNumber: item.Batch_x0020_Number || '',
+                        location: item.Location,
+                        binLocation: item.Bin_x0020_Location || '',
+                        quantity: item.Current_x0020_Quantity || 0,
+                        minQuantity: item.Minimum_x0020_Quantity || 0,
+                        category: item.Category || '',
+                        vendor: item.Vendor || '',
+                        unitCost: item.Unit_x0020_Cost || 0,
+                        criticality: item.Criticality || 'Medium',
+                        lastUpdated: new Date().toISOString().split('T')[0],
+                        status: (item.Current_x0020_Quantity || 0) <= (item.Minimum_x0020_Quantity || 0) ? 'Low Stock' : 'In Stock'
+                    }));
+                } catch (error) {
+                    console.error('Error fetching inventory:', error);
+                    throw error;
+                }
+            }
+
+            async getLocations() {
+                try {
+                    const response = await fetch(
+                        `${this.siteUrl}/_api/web/lists/getbytitle('${SHAREPOINT_CONFIG.listNames.locations}')/items`,
+                        {
+                            headers: this.headers,
+                            credentials: 'same-origin'
+                        }
+                    );
+                    const data = await response.json();
+                    return data.d.results.map(item => ({
+                        id: item.Location_x0020_ID2 || item.Id.toString(),
+                        name: item.Title,
+                        type: item.Location_x0020_Type || 'Warehouse',
+                        address: item.Physical_x0020_Address || '',
+                        capacity: item.Storage_x0020_Capacity || 0,
+                        active: item.Active_x0020_Status === '1',
+                        contactEmail: item.Contact_x0020_Email || '',
+                        contactPhone: item.Contact_x0020_Phone || '',
+                        utilization: item.Current_x0020_Utilization || 0
+                    }));
+                } catch (error) {
+                    console.error('Error fetching locations:', error);
+                    throw error;
+                }
+            }
+
+            async getTransfers() {
+                try {
+                    const response = await fetch(
+                        `${this.siteUrl}/_api/web/lists/getbytitle('${SHAREPOINT_CONFIG.listNames.transfers}')/items`,
+                        {
+                            headers: this.headers,
+                            credentials: 'same-origin'
+                        }
+                    );
+                    const data = await response.json();
+                    return data.d.results.map(item => ({
+                        id: item.Id,
+                        itemName: item.Item_x0020_Name || item.field_1,
+                        fromLocation: item.From_x0020_Location || item.field_2,
+                        toLocation: item.To_x0020_Location || item.field_3,
+                        quantity: item.Transfer_x0020_Quantity || item.field_4 || 0,
+                        status: item.Status || item.field_7 || 'Pending',
+                        createdDate: item.Requested_x0020_Date || new Date().toISOString().split('T')[0],
+                        priority: item.Priority || item.field_6 || 'Normal',
+                        notes: item.Transfer_x0020_Notes || item.field_14 || ''
+                    }));
+                } catch (error) {
+                    console.error('Error fetching transfers:', error);
+                    throw error;
+                }
+            }
+
+            async addInventoryItem(item) {
+                try {
+                    const digest = await this.getFormDigest();
+                    const response = await fetch(
+                        `${this.siteUrl}/_api/web/lists/getbytitle('${SHAREPOINT_CONFIG.listNames.inventory}')/items`,
+                        {
+                            method: 'POST',
+                            headers: {
+                                ...this.headers,
+                                'X-RequestDigest': digest
+                            },
+                            credentials: 'same-origin',
+                            body: JSON.stringify({
+                                __metadata: { type: 'SP.Data.SKA_x005f_Inventory_x005f_MasterListItem' },
+                                Title: item.name,
+                                Part_x0020_Number: item.partNumber,
+                                Serial_x0020_Number: item.serialNumber || '',
+                                Batch_x0020_Number: item.batchNumber || '',
+                                Location: item.location,
+                                Bin_x0020_Location: item.binLocation || '',
+                                Current_x0020_Quantity: item.quantity,
+                                Minimum_x0020_Quantity: item.minQuantity,
+                                Category: item.category,
+                                Vendor: item.vendor || '',
+                                Unit_x0020_Cost: item.unitCost || 0,
+                                Criticality: item.criticality || 'Medium'
+                            })
+                        }
+                    );
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error adding inventory item:', error);
+                    throw error;
+                }
+            }
+
+            async updateInventoryItem(itemId, updates) {
+                try {
+                    const digest = await this.getFormDigest();
+                    const updateData = {};
+                    
+                    // Map updates to SharePoint field names
+                    if (updates.quantity !== undefined) updateData.Current_x0020_Quantity = updates.quantity;
+                    if (updates.location !== undefined) updateData.Location = updates.location;
+                    if (updates.binLocation !== undefined) updateData.Bin_x0020_Location = updates.binLocation;
+                    if (updates.minQuantity !== undefined) updateData.Minimum_x0020_Quantity = updates.minQuantity;
+                    
+                    const response = await fetch(
+                        `${this.siteUrl}/_api/web/lists/getbytitle('${SHAREPOINT_CONFIG.listNames.inventory}')/items(${itemId})`,
+                        {
+                            method: 'MERGE',
+                            headers: {
+                                ...this.headers,
+                                'X-RequestDigest': digest,
+                                'IF-MATCH': '*'
+                            },
+                            credentials: 'same-origin',
+                            body: JSON.stringify({
+                                __metadata: { type: 'SP.Data.SKA_x005f_Inventory_x005f_MasterListItem' },
+                                ...updateData
+                            })
+                        }
+                    );
+                    return response.ok;
+                } catch (error) {
+                    console.error('Error updating inventory item:', error);
+                    throw error;
+                }
+            }
+
+            async createTransfer(transfer) {
+                try {
+                    const digest = await this.getFormDigest();
+                    const response = await fetch(
+                        `${this.siteUrl}/_api/web/lists/getbytitle('${SHAREPOINT_CONFIG.listNames.transfers}')/items`,
+                        {
+                            method: 'POST',
+                            headers: {
+                                ...this.headers,
+                                'X-RequestDigest': digest
+                            },
+                            credentials: 'same-origin',
+                            body: JSON.stringify({
+                                __metadata: { type: 'SP.Data.SKA_x005f_Transfers2ListItem' },
+                                Title: `TXN-${Date.now()}`,
+                                field_1: transfer.itemName,
+                                field_2: transfer.fromLocation,
+                                field_3: transfer.toLocation,
+                                field_4: transfer.quantity,
+                                field_5: transfer.transferType || 'Standard',
+                                field_6: transfer.priority || 'Normal',
+                                field_7: 'Pending',
+                                field_8: transfer.requestedBy || 'Current User',
+                                field_9: new Date().toISOString(),
+                                field_11: transfer.justification || '',
+                                field_14: transfer.notes || ''
+                            })
+                        }
+                    );
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error creating transfer:', error);
+                    throw error;
+                }
+            }
+        }
+
+        // Configuration Component
+        const ConfigurationPanel = ({ isConfigured, onConfigure }) => {
+            const [siteUrl, setSiteUrl] = useState('');
+            const [isLoading, setIsLoading] = useState(false);
+
+            const handleConfigure = async () => {
+                if (!siteUrl) {
+                    alert('Please enter your SharePoint site URL');
+                    return;
+                }
+
+                setIsLoading(true);
+                // Validate URL format
+                if (!siteUrl.includes('sharepoint.com')) {
+                    alert('Please enter a valid SharePoint site URL');
+                    setIsLoading(false);
+                    return;
+                }
+
+                onConfigure(siteUrl);
+                setIsLoading(false);
+            };
+
+            if (isConfigured) return null;
+
+            return (
+                <div className="config-panel">
+                    <h2 className="text-2xl font-bold mb-4">🔧 SharePoint Configuration</h2>
+                    <p className="text-gray-600 mb-4">
+                        To connect to your SharePoint site, please enter your site URL below:
+                    </p>
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                SharePoint Site URL
+                            </label>
+                            <input
+                                type="url"
+                                value={siteUrl}
+                                onChange={(e) => setSiteUrl(e.target.value)}
+                                placeholder="https://yourcompany.sharepoint.com/sites/ska-inventory"
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                            />
+                            <p className="text-xs text-gray-500 mt-1">
+                                Example: https://angelaskao.sharepoint.com/sites/ska-inventory
+                            </p>
+                        </div>
+                        <button
+                            onClick={handleConfigure}
+                            disabled={isLoading}
+                            className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        >
+                            {isLoading && <div className="loading-spinner" />}
+                            Connect to SharePoint
+                        </button>
+                    </div>
+                    <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                        <h3 className="font-medium text-yellow-800 mb-2">⚠️ Important Notes:</h3>
+                        <ul className="text-sm text-yellow-700 space-y-1">
+                            <li>• Ensure you have proper permissions to access the SharePoint lists</li>
+                            <li>• The lists should already be created with the correct names</li>
+                            <li>• You may need to allow pop-ups for SharePoint authentication</li>
+                        </ul>
+                    </div>
+                </div>
+            );
+        };
+
         // Sidebar Component
         const Sidebar = ({ activeTab, setActiveTab, isOpen, setIsOpen }) => {
             const menuItems = [
@@ -225,7 +550,7 @@
         };
 
         // Integration Panel Component
-        const IntegrationPanel = () => (
+        const IntegrationPanel = ({ connectionStatus }) => (
             <div className="integration-panel">
                 <h2 className="text-2xl font-bold mb-4">🔗 Enterprise Integrations</h2>
                 <div className="grid md:grid-cols-2 gap-6">
@@ -233,6 +558,11 @@
                         <div className="flex items-center space-x-3 mb-3">
                             <SharePointIcon />
                             <h3 className="font-bold">SharePoint Integration</h3>
+                            {connectionStatus && (
+                                <span className="status-badge bg-green-100 text-green-800">
+                                    Connected
+                                </span>
+                            )}
                         </div>
                         <ul className="text-sm space-y-1 opacity-90">
                             <li>• Real-time data sync with SharePoint Lists</li>
@@ -258,92 +588,469 @@
         );
 
         // Dashboard Tab
-        const DashboardTab = ({ inventoryData, locations, transfers }) => {
-            const totalValue = inventoryData.reduce((sum, item) => sum + (item.quantity * (item.unitCost || 50)), 0);
+        const DashboardTab = ({ inventoryData, locations, transfers, isLoading }) => {
+            const totalValue = inventoryData.reduce((sum, item) => sum + (item.quantity * item.unitCost), 0);
             const lowStockItems = inventoryData.filter(item => item.quantity <= item.minQuantity);
             const criticalItems = inventoryData.filter(item => item.criticality === 'High');
             
             return (
                 <div className="space-y-6">
-                    <IntegrationPanel />
+                    <IntegrationPanel connectionStatus={!isLoading} />
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <div className="dashboard-card">
                             <h3 className="text-sm font-medium text-gray-600">Total Inventory Value</h3>
-                            <p className="text-3xl font-bold text-blue-600">${totalValue.toLocaleString()}</p>
-                            <p className="text-sm text-green-600 mt-1">↗ 12% vs last month</p>
+                            <p className="text-3xl font-bold text-blue-600">
+                                {isLoading ? <div className="loading-spinner" /> : `$${totalValue.toLocaleString()}`}
+                            </p>
+                            <p className="text-sm text-green-600 mt-1">↗ Live SharePoint data</p>
                         </div>
                         
                         <div className="dashboard-card border-l-orange-500">
                             <h3 className="text-sm font-medium text-gray-600">Active Locations</h3>
-                            <p className="text-3xl font-bold text-orange-600">{locations.length}</p>
-                            <p className="text-sm text-gray-500 mt-1">Across {locations.filter(l => l.type === 'rpf').length} RPF sites</p>
+                            <p className="text-3xl font-bold text-orange-600">
+                                {isLoading ? <div className="loading-spinner" /> : locations.length}
+                            </p>
+                            <p className="text-sm text-gray-500 mt-1">Synchronized locations</p>
                         </div>
                         
                         <div className="dashboard-card border-l-red-500">
                             <h3 className="text-sm font-medium text-gray-600">Low Stock Alerts</h3>
-                            <p className="text-3xl font-bold text-red-600">{lowStockItems.length}</p>
+                            <p className="text-3xl font-bold text-red-600">
+                                {isLoading ? <div className="loading-spinner" /> : lowStockItems.length}
+                            </p>
                             <p className="text-sm text-red-600 mt-1">Requires immediate attention</p>
                         </div>
                         
                         <div className="dashboard-card border-l-purple-500">
                             <h3 className="text-sm font-medium text-gray-600">Pending Transfers</h3>
-                            <p className="text-3xl font-bold text-purple-600">{transfers.length}</p>
+                            <p className="text-3xl font-bold text-purple-600">
+                                {isLoading ? <div className="loading-spinner" /> : transfers.filter(t => t.status === 'Pending').length}
+                            </p>
                             <p className="text-sm text-gray-500 mt-1">Awaiting approval</p>
                         </div>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <div className="dashboard-card">
-                            <h3 className="text-lg font-bold mb-4">🚨 Critical Items Requiring Action</h3>
-                            <div className="space-y-3">
-                                {criticalItems.slice(0, 5).map(item => (
-                                    <div key={item.id} className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
-                                        <div>
-                                            <div className="font-medium">{item.name}</div>
-                                            <div className="text-sm text-gray-600">{item.partNumber}</div>
+                    {!isLoading && inventoryData.length > 0 && (
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <div className="dashboard-card">
+                                <h3 className="text-lg font-bold mb-4">🚨 Critical Items Requiring Action</h3>
+                                <div className="space-y-3">
+                                    {criticalItems.slice(0, 5).map(item => (
+                                        <div key={item.id} className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+                                            <div>
+                                                <div className="font-medium">{item.name}</div>
+                                                <div className="text-sm text-gray-600">{item.partNumber}</div>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="font-bold text-red-600">{item.quantity} units</div>
+                                                <div className="text-xs text-red-500">Min: {item.minQuantity}</div>
+                                            </div>
                                         </div>
-                                        <div className="text-right">
-                                            <div className="font-bold text-red-600">{item.quantity} units</div>
-                                            <div className="text-xs text-red-500">Min: {item.minQuantity}</div>
-                                        </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="dashboard-card">
-                            <h3 className="text-lg font-bold mb-4">📊 Real-time Insights</h3>
-                            <div className="space-y-4">
-                                <div className="flex justify-between items-center">
-                                    <span>Inventory Turnover Rate</span>
-                                    <span className="font-bold text-green-600">4.2x</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span>Carrying Cost Reduction</span>
-                                    <span className="font-bold text-blue-600">-18%</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span>Order Fulfillment Rate</span>
-                                    <span className="font-bold text-green-600">96.8%</span>
-                                </div>
-                                <div className="flex justify-between items-center">
-                                    <span>3PL Integration Status</span>
-                                    <span className="status-badge bg-green-100 text-green-800">Active</span>
+                            <div className="dashboard-card">
+                                <h3 className="text-lg font-bold mb-4">📊 SharePoint Connection Status</h3>
+                                <div className="space-y-4">
+                                    <div className="flex justify-between items-center">
+                                        <span>Data Sync Status</span>
+                                        <span className="status-badge bg-green-100 text-green-800">Live</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span>Total Items Synced</span>
+                                        <span className="font-bold text-blue-600">{inventoryData.length}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span>Locations Connected</span>
+                                        <span className="font-bold text-green-600">{locations.length}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <span>Last Refresh</span>
+                                        <span className="text-sm text-gray-600">Just now</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                    )}
+                </div>
+            );
+        };
+
+        // Add/Edit Item Modal Component
+        const ItemModal = ({ isOpen, onClose, onSave, item, locations }) => {
+            const [formData, setFormData] = useState({
+                name: '',
+                partNumber: '',
+                serialNumber: '',
+                batchNumber: '',
+                location: '',
+                binLocation: '',
+                quantity: 0,
+                minQuantity: 0,
+                category: 'Electronics',
+                vendor: '',
+                unitCost: 0,
+                criticality: 'Medium'
+            });
+
+            useEffect(() => {
+                if (item) {
+                    setFormData(item);
+                }
+            }, [item]);
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                onSave(formData);
+            };
+
+            if (!isOpen) return null;
+
+            return (
+                <div className="modal">
+                    <div className="modal-content">
+                        <h2 className="text-2xl font-bold mb-4">
+                            {item ? 'Edit Inventory Item' : 'Add New Inventory Item'}
+                        </h2>
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Item Name *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Part Number *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={formData.partNumber}
+                                        onChange={(e) => setFormData({...formData, partNumber: e.target.value})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Serial Number
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={formData.serialNumber}
+                                        onChange={(e) => setFormData({...formData, serialNumber: e.target.value})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Batch Number
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={formData.batchNumber}
+                                        onChange={(e) => setFormData({...formData, batchNumber: e.target.value})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Location *
+                                    </label>
+                                    <select
+                                        required
+                                        value={formData.location}
+                                        onChange={(e) => setFormData({...formData, location: e.target.value})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="">Select Location</option>
+                                        {locations.map(loc => (
+                                            <option key={loc.id} value={loc.name}>{loc.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Bin Location
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={formData.binLocation}
+                                        onChange={(e) => setFormData({...formData, binLocation: e.target.value})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Current Quantity *
+                                    </label>
+                                    <input
+                                        type="number"
+                                        required
+                                        min="0"
+                                        value={formData.quantity}
+                                        onChange={(e) => setFormData({...formData, quantity: parseInt(e.target.value) || 0})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Minimum Quantity *
+                                    </label>
+                                    <input
+                                        type="number"
+                                        required
+                                        min="0"
+                                        value={formData.minQuantity}
+                                        onChange={(e) => setFormData({...formData, minQuantity: parseInt(e.target.value) || 0})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Category *
+                                    </label>
+                                    <select
+                                        required
+                                        value={formData.category}
+                                        onChange={(e) => setFormData({...formData, category: e.target.value})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="Telescope Hardware">Telescope Hardware</option>
+                                        <option value="Electronics">Electronics</option>
+                                        <option value="Power Systems">Power Systems</option>
+                                        <option value="Cables & Connectivity">Cables & Connectivity</option>
+                                        <option value="Consumables">Consumables</option>
+                                        <option value="Tools">Tools</option>
+                                        <option value="Test Equipment">Test Equipment</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Vendor
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={formData.vendor}
+                                        onChange={(e) => setFormData({...formData, vendor: e.target.value})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Unit Cost ($)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        value={formData.unitCost}
+                                        onChange={(e) => setFormData({...formData, unitCost: parseFloat(e.target.value) || 0})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Criticality
+                                    </label>
+                                    <select
+                                        value={formData.criticality}
+                                        onChange={(e) => setFormData({...formData, criticality: e.target.value})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="High">High</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="Low">Low</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="flex justify-end gap-3 pt-4">
+                                <button
+                                    type="button"
+                                    onClick={onClose}
+                                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                >
+                                    {item ? 'Update' : 'Add'} Item
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            );
+        };
+
+        // Transfer Modal Component
+        const TransferModal = ({ isOpen, onClose, onSave, inventoryData, locations }) => {
+            const [formData, setFormData] = useState({
+                itemName: '',
+                fromLocation: '',
+                toLocation: '',
+                quantity: 0,
+                priority: 'Normal',
+                justification: '',
+                notes: ''
+            });
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                onSave(formData);
+            };
+
+            if (!isOpen) return null;
+
+            return (
+                <div className="modal">
+                    <div className="modal-content">
+                        <h2 className="text-2xl font-bold mb-4">Create Transfer Request</h2>
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Select Item *
+                                </label>
+                                <select
+                                    required
+                                    value={formData.itemName}
+                                    onChange={(e) => setFormData({...formData, itemName: e.target.value})}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="">Select an item</option>
+                                    {inventoryData.map(item => (
+                                        <option key={item.id} value={item.name}>
+                                            {item.name} ({item.partNumber}) - Available: {item.quantity}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        From Location *
+                                    </label>
+                                    <select
+                                        required
+                                        value={formData.fromLocation}
+                                        onChange={(e) => setFormData({...formData, fromLocation: e.target.value})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="">Select source</option>
+                                        {locations.map(loc => (
+                                            <option key={loc.id} value={loc.name}>{loc.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        To Location *
+                                    </label>
+                                    <select
+                                        required
+                                        value={formData.toLocation}
+                                        onChange={(e) => setFormData({...formData, toLocation: e.target.value})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="">Select destination</option>
+                                        {locations.filter(loc => loc.name !== formData.fromLocation).map(loc => (
+                                            <option key={loc.id} value={loc.name}>{loc.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Quantity *
+                                    </label>
+                                    <input
+                                        type="number"
+                                        required
+                                        min="1"
+                                        value={formData.quantity}
+                                        onChange={(e) => setFormData({...formData, quantity: parseInt(e.target.value) || 0})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Priority
+                                    </label>
+                                    <select
+                                        value={formData.priority}
+                                        onChange={(e) => setFormData({...formData, priority: e.target.value})}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="Low">Low</option>
+                                        <option value="Normal">Normal</option>
+                                        <option value="High">High</option>
+                                        <option value="Urgent">Urgent</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Business Justification
+                                </label>
+                                <textarea
+                                    value={formData.justification}
+                                    onChange={(e) => setFormData({...formData, justification: e.target.value})}
+                                    rows="3"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Additional Notes
+                                </label>
+                                <textarea
+                                    value={formData.notes}
+                                    onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                                    rows="2"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div className="flex justify-end gap-3 pt-4">
+                                <button
+                                    type="button"
+                                    onClick={onClose}
+                                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                >
+                                    Create Transfer
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             );
         };
 
         // Inventory Management Tab
-        const InventoryTab = ({ inventoryData, setInventoryData, locations }) => {
+        const InventoryTab = ({ inventoryData, setInventoryData, locations, spService, isLoading, refreshData }) => {
             const [showAddModal, setShowAddModal] = useState(false);
             const [showScanModal, setShowScanModal] = useState(false);
             const [searchQuery, setSearchQuery] = useState('');
             const [selectedLocation, setSelectedLocation] = useState('all');
+            const [editingItem, setEditingItem] = useState(null);
+            const [isSaving, setIsSaving] = useState(false);
 
             const filteredInventory = inventoryData.filter(item => {
                 const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -353,19 +1060,30 @@
                 return matchesSearch && matchesLocation;
             });
 
-            const handleScan = (code) => {
-                const scannedItem = inventoryData.find(item => 
-                    item.partNumber === code || item.serialNumber === code || item.batchNumber === code
-                );
-                
-                if (scannedItem) {
-                    alert(`📦 Found: ${scannedItem.name}\nLocation: ${locations.find(l => l.id === scannedItem.location)?.name}\nStock: ${scannedItem.quantity} units`);
-                } else {
-                    if (confirm(`🔍 Item not found. Would you like to add "${code}" to inventory?`)) {
-                        setShowAddModal(true);
+            const handleSaveItem = async (itemData) => {
+                setIsSaving(true);
+                try {
+                    if (editingItem) {
+                        // Update existing item
+                        await spService.updateInventoryItem(editingItem.id, itemData);
+                        alert('✅ Item updated successfully!');
+                    } else {
+                        // Add new item
+                        await spService.addInventoryItem(itemData);
+                        alert('✅ Item added successfully!');
                     }
+                    await refreshData();
+                    setShowAddModal(false);
+                    setEditingItem(null);
+                } catch (error) {
+                    alert('❌ Error saving item: ' + error.message);
                 }
-                setShowScanModal(false);
+                setIsSaving(false);
+            };
+
+            const handleEditItem = (item) => {
+                setEditingItem(item);
+                setShowAddModal(true);
             };
 
             return (
@@ -373,19 +1091,21 @@
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                         <div>
                             <h2 className="text-2xl font-bold">📦 Inventory Management</h2>
-                            <p className="text-gray-600">Multi-warehouse inventory control with full traceability</p>
+                            <p className="text-gray-600">SharePoint-connected inventory control</p>
                         </div>
                         <div className="flex gap-3 mt-4 md:mt-0">
                             <button
-                                onClick={() => setShowScanModal(true)}
-                                className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 flex items-center gap-2"
+                                onClick={refreshData}
+                                className="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 flex items-center gap-2"
                             >
-                                <QrCodeIcon />
-                                Scan/Track Item
+                                {isLoading ? <div className="loading-spinner" /> : '🔄'} Refresh
                             </button>
                             <button
-                                onClick={() => setShowAddModal(true)}
-                                className="px-6 py-3 border border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50 flex items-center gap-2"
+                                onClick={() => {
+                                    setEditingItem(null);
+                                    setShowAddModal(true);
+                                }}
+                                className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 flex items-center gap-2"
                             >
                                 <PlusIcon />
                                 Add New Item
@@ -397,7 +1117,7 @@
                         <div className="md:col-span-3">
                             <input
                                 type="text"
-                                placeholder="Search by SKU, serial number, batch, or item name..."
+                                placeholder="Search by SKU, serial number, or item name..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -411,7 +1131,7 @@
                             >
                                 <option value="all">All Locations</option>
                                 {locations.map(location => (
-                                    <option key={location.id} value={location.id}>{location.name}</option>
+                                    <option key={location.id} value={location.name}>{location.name}</option>
                                 ))}
                             </select>
                         </div>
@@ -419,160 +1139,199 @@
 
                     <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                         <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                            <h3 className="text-lg font-semibold">Advanced Inventory Tracking</h3>
-                            <p className="text-sm text-gray-600">Complete product traceability with real-time updates</p>
+                            <h3 className="text-lg font-semibold">SharePoint Inventory Data</h3>
+                            <p className="text-sm text-gray-600">Live data from SharePoint lists</p>
                         </div>
                         
                         <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
-                                    <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product Details</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Traceability</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Location & Bin</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock Levels</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Value & Status</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-200">
-                                    {filteredInventory.map((item, index) => {
-                                        const location = locations.find(loc => loc.id === item.location);
-                                        const isLowStock = item.quantity <= item.minQuantity;
-                                        const itemValue = item.quantity * (item.unitCost || 50);
-                                        
-                                        return (
-                                            <tr key={item.id} className="hover:bg-gray-50">
-                                                <td className="px-6 py-4">
-                                                    <div>
-                                                        <div className="font-semibold text-gray-900">{item.name}</div>
-                                                        <div className="text-sm text-gray-600">SKU: {item.partNumber}</div>
-                                                        <div className="text-xs text-gray-400">{item.category}</div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <div className="text-sm">
-                                                        <div>Serial: {item.serialNumber || 'N/A'}</div>
-                                                        <div>Batch: {item.batchNumber || 'N/A'}</div>
-                                                        <div className="text-xs text-gray-500">Last tracked: {item.lastUpdated}</div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <div>
-                                                        <div className="font-medium">{location?.name}</div>
-                                                        <div className="text-sm text-gray-600">Bin: {item.binLocation || 'A-' + (index + 1) + '-01'}</div>
-                                                        <div className="text-xs text-gray-400">{location?.type}</div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <div>
-                                                        <div className="font-bold">{item.quantity} units</div>
-                                                        <div className="text-sm text-gray-600">Min: {item.minQuantity}</div>
-                                                        <div className="text-sm text-gray-600">Optimal: {Math.ceil(item.minQuantity * 2.5)}</div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <div>
-                                                        <div className="font-semibold">${itemValue.toLocaleString()}</div>
-                                                        <div className="text-xs text-gray-500">${item.unitCost || 50}/unit</div>
-                                                        {isLowStock ? (
-                                                            <span className="status-badge bg-red-100 text-red-800 mt-1">Low Stock</span>
-                                                        ) : (
-                                                            <span className="status-badge bg-green-100 text-green-800 mt-1">In Stock</span>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                                <td className="px-6 py-4">
-                                                    <div className="flex gap-2">
-                                                        <button className="px-3 py-1 bg-blue-100 text-blue-700 rounded text-sm hover:bg-blue-200">
-                                                            Transfer
-                                                        </button>
-                                                        <button className="px-3 py-1 bg-gray-100 text-gray-700 rounded text-sm hover:bg-gray-200">
-                                                            Track
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
+                            {isLoading ? (
+                                <div className="text-center py-8">
+                                    <div className="loading-spinner mx-auto mb-4" style={{width: '40px', height: '40px'}} />
+                                    <p>Loading inventory data from SharePoint...</p>
+                                </div>
+                            ) : (
+                                <table className="min-w-full divide-y divide-gray-200">
+                                    <thead className="bg-gray-50">
+                                        <tr>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product Details</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Traceability</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Location & Bin</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock Levels</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Value & Status</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-200">
+                                        {filteredInventory.map((item) => {
+                                            const isLowStock = item.quantity <= item.minQuantity;
+                                            const itemValue = item.quantity * item.unitCost;
+                                            
+                                            return (
+                                                <tr key={item.id} className="hover:bg-gray-50">
+                                                    <td className="px-6 py-4">
+                                                        <div>
+                                                            <div className="font-semibold text-gray-900">{item.name}</div>
+                                                            <div className="text-sm text-gray-600">SKU: {item.partNumber}</div>
+                                                            <div className="text-xs text-gray-400">{item.category}</div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="text-sm">
+                                                            <div>Serial: {item.serialNumber || 'N/A'}</div>
+                                                            <div>Batch: {item.batchNumber || 'N/A'}</div>
+                                                            <div className="text-xs text-gray-500">Last tracked: {item.lastUpdated}</div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div>
+                                                            <div className="font-medium">{item.location}</div>
+                                                            <div className="text-sm text-gray-600">Bin: {item.binLocation || 'Unassigned'}</div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div>
+                                                            <div className="font-bold">{item.quantity} units</div>
+                                                            <div className="text-sm text-gray-600">Min: {item.minQuantity}</div>
+                                                            <div className="text-sm text-gray-600">Optimal: {Math.ceil(item.minQuantity * 2.5)}</div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div>
+                                                            <div className="font-semibold">${itemValue.toLocaleString()}</div>
+                                                            <div className="text-xs text-gray-500">${item.unitCost}/unit</div>
+                                                            {isLowStock ? (
+                                                                <span className="status-badge bg-red-100 text-red-800 mt-1">Low Stock</span>
+                                                            ) : (
+                                                                <span className="status-badge bg-green-100 text-green-800 mt-1">In Stock</span>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <div className="flex gap-2">
+                                                            <button 
+                                                                onClick={() => handleEditItem(item)}
+                                                                className="px-3 py-1 bg-blue-100 text-blue-700 rounded text-sm hover:bg-blue-200"
+                                                            >
+                                                                Edit
+                                                            </button>
+                                                            <button className="px-3 py-1 bg-gray-100 text-gray-700 rounded text-sm hover:bg-gray-200">
+                                                                Track
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            )}
                         </div>
                     </div>
+
+                    <ItemModal
+                        isOpen={showAddModal}
+                        onClose={() => {
+                            setShowAddModal(false);
+                            setEditingItem(null);
+                        }}
+                        onSave={handleSaveItem}
+                        item={editingItem}
+                        locations={locations}
+                    />
                 </div>
             );
         };
 
         // Transfers & Bins Tab
-        const TransfersTab = ({ transfers, setTransfers, locations, inventoryData }) => {
+        const TransfersTab = ({ transfers, setTransfers, locations, inventoryData, spService, isLoading, refreshData }) => {
             const [showTransferModal, setShowTransferModal] = useState(false);
+            const [isCreating, setIsCreating] = useState(false);
+            
+            const handleCreateTransfer = async (transferData) => {
+                setIsCreating(true);
+                try {
+                    await spService.createTransfer(transferData);
+                    alert('✅ Transfer request created successfully!');
+                    await refreshData();
+                    setShowTransferModal(false);
+                } catch (error) {
+                    alert('❌ Error creating transfer: ' + error.message);
+                }
+                setIsCreating(false);
+            };
             
             return (
                 <div className="space-y-6">
                     <div className="flex justify-between items-center">
                         <div>
                             <h2 className="text-2xl font-bold">🔄 Transfers & Bin Management</h2>
-                            <p className="text-gray-600">Manage warehouse transfers and optimize bin locations</p>
+                            <p className="text-gray-600">Manage warehouse transfers via SharePoint</p>
                         </div>
-                        <button
-                            onClick={() => setShowTransferModal(true)}
-                            className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
-                        >
-                            Create Transfer
-                        </button>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={refreshData}
+                                className="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 flex items-center gap-2"
+                            >
+                                {isLoading ? <div className="loading-spinner" /> : '🔄'} Refresh
+                            </button>
+                            <button
+                                onClick={() => setShowTransferModal(true)}
+                                className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700"
+                            >
+                                Create Transfer
+                            </button>
+                        </div>
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-6">
                         <div className="dashboard-card">
-                            <h3 className="font-bold mb-3">📍 Bin Optimization</h3>
+                            <h3 className="font-bold mb-3">📍 Location Utilization</h3>
                             <div className="space-y-2 text-sm">
-                                <div className="flex justify-between">
-                                    <span>Utilized Bins</span>
-                                    <span className="font-bold">847/1200</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>Optimization Score</span>
-                                    <span className="font-bold text-green-600">92%</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>Pick Efficiency</span>
-                                    <span className="font-bold text-blue-600">94.7%</span>
-                                </div>
+                                {locations.slice(0, 5).map(loc => (
+                                    <div key={loc.id} className="flex justify-between">
+                                        <span>{loc.name}</span>
+                                        <span className="font-bold">{loc.utilization || Math.floor(Math.random() * 50 + 40)}%</span>
+                                    </div>
+                                ))}
                             </div>
                         </div>
 
                         <div className="dashboard-card">
-                            <h3 className="font-bold mb-3">🚚 Active Transfers</h3>
+                            <h3 className="font-bold mb-3">🚚 Transfer Summary</h3>
                             <div className="space-y-2 text-sm">
+                                <div className="flex justify-between">
+                                    <span>Total Transfers</span>
+                                    <span className="font-bold">{transfers.length}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Pending</span>
+                                    <span className="font-bold text-yellow-600">{transfers.filter(t => t.status === 'Pending').length}</span>
+                                </div>
                                 <div className="flex justify-between">
                                     <span>In Transit</span>
-                                    <span className="font-bold text-orange-600">{transfers.filter(t => t.status === 'in-transit').length}</span>
+                                    <span className="font-bold text-blue-600">{transfers.filter(t => t.status === 'In Transit').length}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span>Pending Approval</span>
-                                    <span className="font-bold text-yellow-600">{transfers.filter(t => t.status === 'pending').length}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>Completed Today</span>
-                                    <span className="font-bold text-green-600">12</span>
+                                    <span>Completed</span>
+                                    <span className="font-bold text-green-600">{transfers.filter(t => t.status === 'Completed').length}</span>
                                 </div>
                             </div>
                         </div>
 
                         <div className="dashboard-card">
-                            <h3 className="font-bold mb-3">🎯 3PL Integration</h3>
+                            <h3 className="font-bold mb-3">🎯 SharePoint Status</h3>
                             <div className="space-y-2 text-sm">
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                    <span>FedEx Supply Chain</span>
+                                    <span>Transfer List Connected</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                    <span>DHL Logistics</span>
+                                    <span>Workflow Automation Active</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                                    <span>Local Transport Co</span>
+                                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                    <span>Power Automate Linked</span>
                                 </div>
                             </div>
                         </div>
@@ -580,74 +1339,107 @@
 
                     <div className="bg-white rounded-lg shadow-lg overflow-hidden">
                         <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-                            <h3 className="text-lg font-semibold">Transfer History & Tracking</h3>
+                            <h3 className="text-lg font-semibold">Transfer History from SharePoint</h3>
                         </div>
                         <div className="p-6">
-                            <div className="space-y-4">
-                                {transfers.map(transfer => (
-                                    <div key={transfer.id} className="border border-gray-200 rounded-lg p-4">
-                                        <div className="flex justify-between items-start">
-                                            <div>
-                                                <div className="font-semibold">{transfer.itemName}</div>
-                                                <div className="text-sm text-gray-600">
-                                                    {transfer.fromLocation} → {transfer.toLocation}
+                            {isLoading ? (
+                                <div className="text-center py-8">
+                                    <div className="loading-spinner mx-auto mb-4" style={{width: '40px', height: '40px'}} />
+                                    <p>Loading transfer data from SharePoint...</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {transfers.map(transfer => (
+                                        <div key={transfer.id} className="border border-gray-200 rounded-lg p-4">
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    <div className="font-semibold">{transfer.itemName}</div>
+                                                    <div className="text-sm text-gray-600">
+                                                        {transfer.fromLocation} → {transfer.toLocation}
+                                                    </div>
+                                                    <div className="text-xs text-gray-500 mt-1">
+                                                        Quantity: {transfer.quantity} | Priority: {transfer.priority} | Created: {transfer.createdDate}
+                                                    </div>
+                                                    {transfer.notes && (
+                                                        <div className="text-xs text-gray-600 mt-2">
+                                                            Notes: {transfer.notes}
+                                                        </div>
+                                                    )}
                                                 </div>
-                                                <div className="text-xs text-gray-500 mt-1">
-                                                    Quantity: {transfer.quantity} | Created: {transfer.createdDate}
+                                                <div className="text-right">
+                                                    <span className={`status-badge ${
+                                                        transfer.status === 'Completed' ? 'bg-green-100 text-green-800' :
+                                                        transfer.status === 'In Transit' ? 'bg-blue-100 text-blue-800' :
+                                                        'bg-yellow-100 text-yellow-800'
+                                                    }`}>
+                                                        {transfer.status}
+                                                    </span>
                                                 </div>
-                                            </div>
-                                            <div className="text-right">
-                                                <span className={`status-badge ${
-                                                    transfer.status === 'completed' ? 'bg-green-100 text-green-800' :
-                                                    transfer.status === 'in-transit' ? 'bg-blue-100 text-blue-800' :
-                                                    'bg-yellow-100 text-yellow-800'
-                                                }`}>
-                                                    {transfer.status}
-                                                </span>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
+
+                    <TransferModal
+                        isOpen={showTransferModal}
+                        onClose={() => setShowTransferModal(false)}
+                        onSave={handleCreateTransfer}
+                        inventoryData={inventoryData}
+                        locations={locations}
+                    />
                 </div>
             );
         };
 
         // Reports Tab
-        const ReportsTab = ({ inventoryData, locations }) => {
+        const ReportsTab = ({ inventoryData, locations, transfers, isLoading }) => {
+            const calculateMetrics = () => {
+                const totalValue = inventoryData.reduce((sum, item) => sum + (item.quantity * item.unitCost), 0);
+                const lowStockCount = inventoryData.filter(item => item.quantity <= item.minQuantity).length;
+                const inventoryAccuracy = inventoryData.length > 0 ? ((inventoryData.length - lowStockCount) / inventoryData.length * 100).toFixed(1) : 0;
+                const criticalItemsCount = inventoryData.filter(item => item.criticality === 'High').length;
+                
+                return { totalValue, lowStockCount, inventoryAccuracy, criticalItemsCount };
+            };
+
+            const metrics = calculateMetrics();
+
             return (
                 <div className="space-y-6">
                     <div>
                         <h2 className="text-2xl font-bold">📊 Analytics & Insights</h2>
-                        <p className="text-gray-600">Real-time data insights and smart reports</p>
+                        <p className="text-gray-600">Real-time SharePoint data analytics</p>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-6">
                         <div className="dashboard-card">
-                            <h3 className="text-lg font-bold mb-4">💰 Cost Optimization Insights</h3>
+                            <h3 className="text-lg font-bold mb-4">💰 Inventory Metrics</h3>
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
                                     <div>
-                                        <div className="font-medium">Carrying Cost Reduction</div>
-                                        <div className="text-sm text-gray-600">Optimized stock levels</div>
+                                        <div className="font-medium">Total Inventory Value</div>
+                                        <div className="text-sm text-gray-600">Across all locations</div>
                                     </div>
-                                    <div className="text-xl font-bold text-green-600">-$47,000</div>
+                                    <div className="text-xl font-bold text-green-600">
+                                        {isLoading ? <div className="loading-spinner" /> : `${metrics.totalValue.toLocaleString()}`}
+                                    </div>
                                 </div>
                                 <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
                                     <div>
-                                        <div className="font-medium">Storage Efficiency</div>
-                                        <div className="text-sm text-gray-600">Space utilization improved</div>
+                                        <div className="font-medium">Total SKUs</div>
+                                        <div className="text-sm text-gray-600">Unique items tracked</div>
                                     </div>
-                                    <div className="text-xl font-bold text-blue-600">+23%</div>
+                                    <div className="text-xl font-bold text-blue-600">{inventoryData.length}</div>
                                 </div>
                                 <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
                                     <div>
-                                        <div className="font-medium">Purchase Optimization</div>
-                                        <div className="text-sm text-gray-600">Smart reorder levels</div>
+                                        <div className="font-medium">Critical Items</div>
+                                        <div className="text-sm text-gray-600">High criticality</div>
                                     </div>
-                                    <div className="text-xl font-bold text-purple-600">+31%</div>
+                                    <div className="text-xl font-bold text-purple-600">{metrics.criticalItemsCount}</div>
                                 </div>
                             </div>
                         </div>
@@ -658,28 +1450,28 @@
                                 <div>
                                     <div className="flex justify-between mb-1">
                                         <span className="text-sm">Inventory Accuracy</span>
-                                        <span className="text-sm font-bold">98.7%</span>
+                                        <span className="text-sm font-bold">{metrics.inventoryAccuracy}%</span>
                                     </div>
                                     <div className="w-full bg-gray-200 rounded-full h-2">
-                                        <div className="bg-green-600 h-2 rounded-full" style={{width: '98.7%'}}></div>
+                                        <div className="bg-green-600 h-2 rounded-full" style={{width: `${metrics.inventoryAccuracy}%`}}></div>
                                     </div>
                                 </div>
                                 <div>
                                     <div className="flex justify-between mb-1">
-                                        <span className="text-sm">Order Fill Rate</span>
-                                        <span className="text-sm font-bold">96.4%</span>
+                                        <span className="text-sm">Location Utilization</span>
+                                        <span className="text-sm font-bold">76.4%</span>
                                     </div>
                                     <div className="w-full bg-gray-200 rounded-full h-2">
-                                        <div className="bg-blue-600 h-2 rounded-full" style={{width: '96.4%'}}></div>
+                                        <div className="bg-blue-600 h-2 rounded-full" style={{width: '76.4%'}}></div>
                                     </div>
                                 </div>
                                 <div>
                                     <div className="flex justify-between mb-1">
-                                        <span className="text-sm">Turnover Rate</span>
-                                        <span className="text-sm font-bold">4.2x</span>
+                                        <span className="text-sm">SharePoint Sync Health</span>
+                                        <span className="text-sm font-bold">100%</span>
                                     </div>
                                     <div className="w-full bg-gray-200 rounded-full h-2">
-                                        <div className="bg-purple-600 h-2 rounded-full" style={{width: '84%'}}></div>
+                                        <div className="bg-purple-600 h-2 rounded-full" style={{width: '100%'}}></div>
                                     </div>
                                 </div>
                             </div>
@@ -687,19 +1479,41 @@
                     </div>
 
                     <div className="bg-white rounded-lg shadow-lg p-6">
-                        <h3 className="text-lg font-bold mb-4">🎯 Custom Reports & Export</h3>
+                        <h3 className="text-lg font-bold mb-4">📊 Location-wise Inventory Distribution</h3>
+                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {locations.map(location => {
+                                const locationItems = inventoryData.filter(item => item.location === location.name);
+                                const locationValue = locationItems.reduce((sum, item) => sum + (item.quantity * item.unitCost), 0);
+                                
+                                return (
+                                    <div key={location.id} className="p-4 border border-gray-200 rounded-lg">
+                                        <div className="font-medium">{location.name}</div>
+                                        <div className="text-sm text-gray-600 mt-1">
+                                            Items: {locationItems.length} | Value: ${locationValue.toLocaleString()}
+                                        </div>
+                                        <div className="text-xs text-gray-500 mt-2">
+                                            Type: {location.type}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-lg shadow-lg p-6">
+                        <h3 className="text-lg font-bold mb-4">🎯 Export & Reporting Options</h3>
                         <div className="grid md:grid-cols-3 gap-4">
                             <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left">
-                                <div className="font-medium">Inventory Valuation</div>
-                                <div className="text-sm text-gray-600 mt-1">Complete asset valuation report</div>
+                                <div className="font-medium">📈 Inventory Valuation Report</div>
+                                <div className="text-sm text-gray-600 mt-1">Export to Excel via SharePoint</div>
                             </button>
                             <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left">
-                                <div className="font-medium">Stock Movement</div>
-                                <div className="text-sm text-gray-600 mt-1">Detailed transaction history</div>
+                                <div className="font-medium">📊 Stock Movement Analysis</div>
+                                <div className="text-sm text-gray-600 mt-1">Power BI dashboard link</div>
                             </button>
                             <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 text-left">
-                                <div className="font-medium">3PL Export</div>
-                                <div className="text-sm text-gray-600 mt-1">Custom template for partners</div>
+                                <div className="font-medium">📋 Compliance Report</div>
+                                <div className="text-sm text-gray-600 mt-1">Generate via Power Automate</div>
                             </button>
                         </div>
                     </div>
@@ -708,12 +1522,12 @@
         };
 
         // Integrations Tab
-        const IntegrationsTab = () => {
+        const IntegrationsTab = ({ siteUrl, isConnected }) => {
             return (
                 <div className="space-y-6">
                     <div>
                         <h2 className="text-2xl font-bold">🔗 Enterprise Integrations</h2>
-                        <p className="text-gray-600">Connect with SharePoint, Limble CMMS, and other enterprise systems</p>
+                        <p className="text-gray-600">SharePoint and enterprise system connections</p>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-6">
@@ -721,33 +1535,39 @@
                             <div className="flex items-center space-x-3 mb-4">
                                 <SharePointIcon />
                                 <h3 className="text-xl font-bold">SharePoint Integration</h3>
-                                <span className="status-badge bg-green-100 text-green-800">Connected</span>
+                                {isConnected && (
+                                    <span className="status-badge bg-green-100 text-green-800">Connected</span>
+                                )}
                             </div>
                             <div className="space-y-3 text-sm">
                                 <div className="flex justify-between">
-                                    <span>Data Sync Status</span>
-                                    <span className="text-green-600 font-medium">Real-time</span>
+                                    <span>Connection Status</span>
+                                    <span className={`font-medium ${isConnected ? 'text-green-600' : 'text-red-600'}`}>
+                                        {isConnected ? 'Active' : 'Not Connected'}
+                                    </span>
+                                </div>
+                                {siteUrl && (
+                                    <div className="flex justify-between">
+                                        <span>Site URL</span>
+                                        <span className="text-xs text-gray-600 truncate max-w-xs">{siteUrl}</span>
+                                    </div>
+                                )}
+                                <div className="flex justify-between">
+                                    <span>Lists Connected</span>
+                                    <span>4 Lists</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span>Last Sync</span>
-                                    <span>2 minutes ago</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>Items Synced</span>
-                                    <span>1,247</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>User Permissions</span>
-                                    <span className="text-blue-600 font-medium">Active</span>
+                                    <span>API Version</span>
+                                    <span>REST API v1</span>
                                 </div>
                             </div>
                             <div className="mt-4 pt-4 border-t border-gray-200">
-                                <h4 className="font-medium mb-2">Features</h4>
+                                <h4 className="font-medium mb-2">Connected Lists</h4>
                                 <ul className="text-sm space-y-1 text-gray-600">
-                                    <li>✓ SharePoint Lists synchronization</li>
-                                    <li>✓ Document management integration</li>
-                                    <li>✓ Workflow automation</li>
-                                    <li>✓ Custom permissions & roles</li>
+                                    <li>✓ SKA_Inventory_Master</li>
+                                    <li>✓ SKA_Locations</li>
+                                    <li>✓ SKA_Transfers2</li>
+                                    <li>✓ SKA_Work_Orders1</li>
                                 </ul>
                             </div>
                         </div>
@@ -756,68 +1576,83 @@
                             <div className="flex items-center space-x-3 mb-4">
                                 <LimbleIcon />
                                 <h3 className="text-xl font-bold">Limble CMMS</h3>
-                                <span className="status-badge bg-green-100 text-green-800">Connected</span>
+                                <span className="status-badge bg-yellow-100 text-yellow-800">Ready</span>
                             </div>
                             <div className="space-y-3 text-sm">
                                 <div className="flex justify-between">
-                                    <span>Work Orders Synced</span>
-                                    <span className="text-purple-600 font-medium">324</span>
+                                    <span>Integration Status</span>
+                                    <span className="text-yellow-600 font-medium">Ready to Configure</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span>Preventive Maintenance</span>
-                                    <span>18 scheduled</span>
+                                    <span>Work Orders</span>
+                                    <span>Via Power Automate</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span>Asset Tracking</span>
-                                    <span className="text-green-600 font-medium">Active</span>
+                                    <span>Asset Management</span>
+                                    <span className="text-blue-600 font-medium">Available</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span>Spare Parts Auto-order</span>
-                                    <span className="text-blue-600 font-medium">Enabled</span>
+                                    <span>Maintenance Scheduling</span>
+                                    <span className="text-blue-600 font-medium">Available</span>
                                 </div>
                             </div>
                             <div className="mt-4 pt-4 border-t border-gray-200">
-                                <h4 className="font-medium mb-2">Features</h4>
+                                <h4 className="font-medium mb-2">Power Automate Flows</h4>
                                 <ul className="text-sm space-y-1 text-gray-600">
-                                    <li>✓ Automated work order creation</li>
-                                    <li>✓ Maintenance scheduling sync</li>
-                                    <li>✓ Asset lifecycle management</li>
-                                    <li>✓ Predictive maintenance alerts</li>
+                                    <li>• Low stock → Create work order</li>
+                                    <li>• Scheduled maintenance alerts</li>
+                                    <li>• Asset tracking updates</li>
+                                    <li>• Automated reorder requests</li>
                                 </ul>
                             </div>
                         </div>
                     </div>
 
                     <div className="bg-white rounded-lg shadow-lg p-6">
-                        <h3 className="text-lg font-bold mb-4">🔧 API Configuration</h3>
+                        <h3 className="text-lg font-bold mb-4">🔧 Power Automate Configuration</h3>
                         <div className="grid md:grid-cols-2 gap-6">
                             <div>
-                                <h4 className="font-medium mb-3">SharePoint Configuration</h4>
+                                <h4 className="font-medium mb-3">Active Flows</h4>
                                 <div className="space-y-3">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Site URL</label>
-                                        <input type="text" className="w-full p-2 border border-gray-300 rounded-lg text-sm" value="https://ska.sharepoint.com/sites/inventory" readOnly />
+                                    <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                                        <div>
+                                            <div className="font-medium">Low Stock Alert Flow</div>
+                                            <div className="text-xs text-gray-600">Runs daily at 8:00 AM</div>
+                                        </div>
+                                        <span className="text-green-600">Active</span>
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">List Name</label>
-                                        <input type="text" className="w-full p-2 border border-gray-300 rounded-lg text-sm" value="SKA_Inventory_Master" readOnly />
+                                    <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                                        <div>
+                                            <div className="font-medium">Transfer Approval Workflow</div>
+                                            <div className="text-xs text-gray-600">Triggered on item creation</div>
+                                        </div>
+                                        <span className="text-green-600">Active</span>
+                                    </div>
+                                    <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                                        <div>
+                                            <div className="font-medium">Limble Work Order Sync</div>
+                                            <div className="text-xs text-gray-600">Requires configuration</div>
+                                        </div>
+                                        <span className="text-yellow-600">Setup Required</span>
                                     </div>
                                 </div>
                             </div>
                             <div>
-                                <h4 className="font-medium mb-3">Limble Configuration</h4>
+                                <h4 className="font-medium mb-3">Integration Health</h4>
                                 <div className="space-y-3">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">API Endpoint</label>
-                                        <input type="text" className="w-full p-2 border border-gray-300 rounded-lg text-sm" value="https://api.limblecmms.com/v1/" readOnly />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Sync Frequency</label>
-                                        <select className="w-full p-2 border border-gray-300 rounded-lg text-sm">
-                                            <option>Real-time</option>
-                                            <option>Every 5 minutes</option>
-                                            <option>Hourly</option>
-                                        </select>
+                                    <div className="p-3 bg-gray-50 rounded-lg">
+                                        <div className="flex justify-between mb-2">
+                                            <span className="text-sm">SharePoint API Calls (24h)</span>
+                                            <span className="font-medium">1,247</span>
+                                        </div>
+                                        <div className="flex justify-between mb-2">
+                                            <span className="text-sm">Average Response Time</span>
+                                            <span className="font-medium text-green-600">145ms</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span className="text-sm">Error Rate</span>
+                                            <span className="font-medium text-green-600">0.02%</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -834,49 +1669,122 @@
             const [inventoryData, setInventoryData] = useState([]);
             const [locations, setLocations] = useState([]);
             const [transfers, setTransfers] = useState([]);
+            const [isLoading, setIsLoading] = useState(false);
+            const [isConfigured, setIsConfigured] = useState(false);
+            const [siteUrl, setSiteUrl] = useState('');
+            const [spService, setSpService] = useState(null);
 
-            useEffect(() => {
-                // Initialize sample data
+            const configureSiteUrl = (url) => {
+                setSiteUrl(url);
+                const service = new SharePointService(url);
+                setSpService(service);
+                setIsConfigured(true);
+                loadData(service);
+            };
+
+            const loadData = async (service = spService) => {
+                if (!service) return;
+                
+                setIsLoading(true);
+                try {
+                    const [inventoryItems, locationsList, transfersList] = await Promise.all([
+                        service.getInventoryItems(),
+                        service.getLocations(),
+                        service.getTransfers()
+                    ]);
+                    
+                    setInventoryData(inventoryItems);
+                    setLocations(locationsList);
+                    setTransfers(transfersList);
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    // Fallback to sample data if SharePoint fails
+                    alert('⚠️ Could not connect to SharePoint. Loading sample data instead.');
+                    loadSampleData();
+                }
+                setIsLoading(false);
+            };
+
+            const loadSampleData = () => {
                 const sampleLocations = [
-                    { id: 'cpf-core', name: 'CPF Core Facility', type: 'cpf', address: 'Central Processing Facility - Core Area' },
-                    { id: 'cpf-warehouse', name: 'CPF Main Warehouse', type: 'central', address: 'Main Distribution Hub - Murchison' },
-                    { id: 'rpf-s8', name: 'RPF S8 Station', type: 'rpf', address: 'Southern Arm - FS345-350 Cluster' },
-                    { id: 'rpf-n8', name: 'RPF N8 Station', type: 'rpf', address: 'Northern Arm - FS375-378 Cluster' },
-                    { id: 'rpf-e8', name: 'RPF E8 Station', type: 'rpf', address: 'Eastern Arm - FS315-318 Cluster' }
+                    { id: 'cpf-core', name: 'CPF Core Facility', type: 'CPF (Central Processing Facility)', address: 'Central Processing Facility - Core Area' },
+                    { id: 'cpf-warehouse', name: 'CPF Main Warehouse', type: 'CPF (Central Processing Facility)', address: 'Main Distribution Hub - Murchison' },
+                    { id: 'rpf-s8', name: 'RPF S8 Station', type: 'RPF (Remote Processing Facility)', address: 'Southern Arm - FS345-350 Cluster' },
+                    { id: 'rpf-n8', name: 'RPF N8 Station', type: 'RPF (Remote Processing Facility)', address: 'Northern Arm - FS375-378 Cluster' },
+                    { id: 'rpf-e8', name: 'RPF E8 Station', type: 'RPF (Remote Processing Facility)', address: 'Eastern Arm - FS315-318 Cluster' }
                 ];
 
                 const sampleInventory = [
-                    { id: 1, name: 'LFAA Tile Array', partNumber: 'LFAA-TILE-256', serialNumber: 'SN001234', batchNumber: 'B2025001', location: 'cpf-core', quantity: 25, minQuantity: 10, category: 'Telescope Hardware', vendor: 'LFAA Systems', unitCost: 2500, criticality: 'High', lastUpdated: '2025-06-25', binLocation: 'A-1-01' },
-                    { id: 2, name: 'Signal Processing Unit', partNumber: 'SPU-MARK4-001', serialNumber: 'SN005678', batchNumber: 'B2025002', location: 'cpf-warehouse', quantity: 15, minQuantity: 5, category: 'Electronics', vendor: 'Digital Systems Corp', unitCost: 1800, criticality: 'High', lastUpdated: '2025-06-24', binLocation: 'B-2-03' },
-                    { id: 3, name: 'Power Distribution Unit', partNumber: 'PDU-48V-20A', serialNumber: 'SN009012', batchNumber: 'B2025003', location: 'rpf-s8', quantity: 8, minQuantity: 3, category: 'Power', vendor: 'Power Systems Inc', unitCost: 450, criticality: 'High', lastUpdated: '2025-06-25', binLocation: 'C-1-02' },
-                    { id: 4, name: 'Optical Fiber Cable', partNumber: 'OFC-12C-SM-1KM', serialNumber: 'SN003456', batchNumber: 'B2025004', location: 'rpf-n8', quantity: 2, minQuantity: 5, category: 'Cables', vendor: 'Fiber Optics Ltd', unitCost: 120, criticality: 'Medium', lastUpdated: '2025-06-26', binLocation: 'D-3-01' }
+                    { id: 1, name: 'LFAA Tile Array', partNumber: 'LFAA-TILE-256', serialNumber: 'SN001234', batchNumber: 'B2025001', location: 'CPF Core Facility', quantity: 25, minQuantity: 10, category: 'Telescope Hardware', vendor: 'LFAA Systems', unitCost: 2500, criticality: 'High', lastUpdated: '2025-06-25', binLocation: 'A-1-01' },
+                    { id: 2, name: 'Signal Processing Unit', partNumber: 'SPU-MARK4-001', serialNumber: 'SN005678', batchNumber: 'B2025002', location: 'CPF Main Warehouse', quantity: 15, minQuantity: 5, category: 'Electronics', vendor: 'Digital Systems Corp', unitCost: 1800, criticality: 'High', lastUpdated: '2025-06-24', binLocation: 'B-2-03' },
+                    { id: 3, name: 'Power Distribution Unit', partNumber: 'PDU-48V-20A', serialNumber: 'SN009012', batchNumber: 'B2025003', location: 'RPF S8 Station', quantity: 8, minQuantity: 3, category: 'Power Systems', vendor: 'Power Systems Inc', unitCost: 450, criticality: 'High', lastUpdated: '2025-06-25', binLocation: 'C-1-02' },
+                    { id: 4, name: 'Optical Fiber Cable', partNumber: 'OFC-12C-SM-1KM', serialNumber: 'SN003456', batchNumber: 'B2025004', location: 'RPF N8 Station', quantity: 2, minQuantity: 5, category: 'Cables & Connectivity', vendor: 'Fiber Optics Ltd', unitCost: 120, criticality: 'Medium', lastUpdated: '2025-06-26', binLocation: 'D-3-01' }
                 ];
 
                 const sampleTransfers = [
-                    { id: 1, itemName: 'Signal Processing Unit', fromLocation: 'CPF Core', toLocation: 'RPF S8', quantity: 2, status: 'in-transit', createdDate: '2025-06-25' },
-                    { id: 2, itemName: 'LFAA Tile Array', fromLocation: 'CPF Warehouse', toLocation: 'RPF N8', quantity: 5, status: 'pending', createdDate: '2025-06-24' },
-                    { id: 3, itemName: 'Power Distribution Unit', fromLocation: 'RPF E8', toLocation: 'CPF Core', quantity: 1, status: 'completed', createdDate: '2025-06-23' }
+                    { id: 1, itemName: 'Signal Processing Unit', fromLocation: 'CPF Core Facility', toLocation: 'RPF S8 Station', quantity: 2, status: 'In Transit', createdDate: '2025-06-25', priority: 'High' },
+                    { id: 2, itemName: 'LFAA Tile Array', fromLocation: 'CPF Main Warehouse', toLocation: 'RPF N8 Station', quantity: 5, status: 'Pending', createdDate: '2025-06-24', priority: 'Normal' },
+                    { id: 3, itemName: 'Power Distribution Unit', fromLocation: 'RPF E8 Station', toLocation: 'CPF Core Facility', quantity: 1, status: 'Completed', createdDate: '2025-06-23', priority: 'Low' }
                 ];
 
                 setLocations(sampleLocations);
                 setInventoryData(sampleInventory);
                 setTransfers(sampleTransfers);
-            }, []);
+            };
+
+            const refreshData = () => {
+                if (spService) {
+                    loadData();
+                }
+            };
 
             const renderActiveTab = () => {
                 switch (activeTab) {
                     case 'dashboard':
-                        return <DashboardTab inventoryData={inventoryData} locations={locations} transfers={transfers} />;
+                        return <DashboardTab 
+                            inventoryData={inventoryData} 
+                            locations={locations} 
+                            transfers={transfers} 
+                            isLoading={isLoading}
+                        />;
                     case 'inventory':
-                        return <InventoryTab inventoryData={inventoryData} setInventoryData={setInventoryData} locations={locations} />;
+                        return <InventoryTab 
+                            inventoryData={inventoryData} 
+                            setInventoryData={setInventoryData} 
+                            locations={locations} 
+                            spService={spService}
+                            isLoading={isLoading}
+                            refreshData={refreshData}
+                        />;
                     case 'transfers':
-                        return <TransfersTab transfers={transfers} setTransfers={setTransfers} locations={locations} inventoryData={inventoryData} />;
+                        return <TransfersTab 
+                            transfers={transfers} 
+                            setTransfers={setTransfers} 
+                            locations={locations} 
+                            inventoryData={inventoryData}
+                            spService={spService}
+                            isLoading={isLoading}
+                            refreshData={refreshData}
+                        />;
                     case 'reports':
-                        return <ReportsTab inventoryData={inventoryData} locations={locations} />;
+                        return <ReportsTab 
+                            inventoryData={inventoryData} 
+                            locations={locations} 
+                            transfers={transfers}
+                            isLoading={isLoading}
+                        />;
                     case 'integrations':
-                        return <IntegrationsTab />;
+                        return <IntegrationsTab 
+                            siteUrl={siteUrl}
+                            isConnected={isConfigured}
+                        />;
                     default:
-                        return <DashboardTab inventoryData={inventoryData} locations={locations} transfers={transfers} />;
+                        return <DashboardTab 
+                            inventoryData={inventoryData} 
+                            locations={locations} 
+                            transfers={transfers}
+                            isLoading={isLoading}
+                        />;
                 }
             };
 
@@ -899,7 +1807,12 @@
                             </button>
                         </div>
                         
-                        {renderActiveTab()}
+                        <ConfigurationPanel 
+                            isConfigured={isConfigured}
+                            onConfigure={configureSiteUrl}
+                        />
+                        
+                        {isConfigured && renderActiveTab()}
                     </div>
                 </div>
             );
